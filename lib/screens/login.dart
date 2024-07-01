@@ -1,6 +1,7 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:netvexanh_mobile/controllers/auth_controller.dart';
+import 'package:netvexanh_mobile/screens/exeminer.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -130,7 +131,19 @@ class _LoginScreenState extends State<LoginScreen> {
                         onPressed: () async {
                           final username = usernameController.text;
                           final password = passwordController.text;
-                          await authController.login(username, password);
+                          var test = await authController.login(username, password);
+                          if (test != null) {
+                            // Điều hướng sang trang khác nếu đăng nhập thành công
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => ExeminerScreen()),
+                            );
+                          } else {
+                            // Hiển thị thông báo lỗi nếu đăng nhập thất bại
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Login Error')),
+                            );
+                          }
                         },
                         color: const Color.fromRGBO(49, 39, 79, 1),
                         shape: RoundedRectangleBorder(

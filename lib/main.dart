@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:netvexanh_mobile/screens/home.dart';
 import 'package:netvexanh_mobile/screens/login.dart';
 
 void main() {
@@ -11,7 +12,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: LoginScreen(),
+      home: AccountListScreen(),
     );
   }
 }

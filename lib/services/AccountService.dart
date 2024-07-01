@@ -1,18 +1,19 @@
-// import 'dart:convert';
-// import 'package:http/http.dart' as http;
-// import 'package:netvexanh_mobile/models/account.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:netvexanh_mobile/services/account1.dart';
 
-// class AccountService {
-//   static Future<List<Account>> fetchUsers() async {
-//     final url = 'https://randomuser.me/api/?results=10';
-//     final uri = Uri.parse(url);
-//     final response = await http.get(uri);
-//     final body = response.body;
-//     final json = jsonDecode(body);
-//     final result = json['results'] as List<dynamic>;
-//     final accounts = result.map((e) {
-//       return Account.fromJson(e as Map<String, dynamic>);
-//     }).toList();
-//     return accounts;
-//   }
-// }
+class AccountService {
+  static Future<List<Account1>> fetchAccounts() async {
+    final url = 'https://randomuser.me/api/?results=10';
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      final jsonBody = json.decode(response.body);
+      final results = jsonBody['results'] as List;
+
+      return results.map((json) => Account1.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to load accounts');
+    }
+  }
+}
