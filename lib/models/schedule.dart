@@ -1,23 +1,25 @@
 import 'package:json_annotation/json_annotation.dart';
 
-part 'account1.g.dart';
+part 'map/schedule.g.dart';
 
 @JsonSerializable()
-class Account1 {
-  String? email;
-  String? thumbnail;
+class Schedule {
+  String id;
+  String? roundId;
+  String? description;
+  String? examinerId;
 
-  Account1(this.email, this.thumbnail);
+  Schedule(this.id, this.roundId, this.description, this.examinerId);
 
   /// A necessary factory constructor for creating a new User instance
   /// from a map. Pass the map to the generated `_$UserFromJson()` constructor.
   /// The constructor is named after the source class, in this case, User.
 
-  factory Account1.fromJson(Map<String, dynamic> json) =>
-      _$Account1FromJson(json);
+  factory Schedule.fromJson(Map<String, dynamic> json) =>
+      _$ScheduleFromJson(json);
 
   /// `toJson` is the convention for a class to declare support for serialization
   /// to JSON. The implementation simply calls the private, generated
   /// helper method `_$UserToJson`.
-  Map<String, dynamic> toJson() => _$Account1ToJson(this);
+  Map<String, dynamic> toJson() => _$ScheduleToJson(this);
 }

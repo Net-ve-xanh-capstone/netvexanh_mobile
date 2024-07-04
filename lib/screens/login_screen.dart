@@ -1,7 +1,8 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
-import 'package:netvexanh_mobile/controllers/auth_controller.dart';
-import 'package:netvexanh_mobile/screens/exeminer.dart';
+import 'package:netvexanh_mobile/screens/navigation_home_screen.dart';
+import 'package:netvexanh_mobile/services/account_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -11,11 +12,31 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+
+
+  @override
+  void initState() {
+    super.initState();
+    checkLoginStatus();
+  }
+
+  Future<void> checkLoginStatus() async {
+    var _prefs = await SharedPreferences.getInstance();
+    final String? jwt = await _prefs.getString('jwtToken');
+    if (jwt != null && jwt.isNotEmpty) {
+      // Navigate to home screen if JWT exists
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => NavigationHomeScreen()),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     TextEditingController usernameController = TextEditingController();
     TextEditingController passwordController = TextEditingController();
-    AuthController authController = AuthController();
+    AccountService acc = AccountService();
     final width = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: Colors.white,
@@ -131,12 +152,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         onPressed: () async {
                           final username = usernameController.text;
                           final password = passwordController.text;
-                          var test = await authController.login(username, password);
-                          if (test != null) {
+                          var login = await acc.login(username, password);
+                          if (login != false) {
                             // Điều hướng sang trang khác nếu đăng nhập thành công
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => ExeminerScreen()),
+                              MaterialPageRoute(
+                                  builder: (context) => NavigationHomeScreen()),
                             );
                           } else {
                             // Hiển thị thông báo lỗi nếu đăng nhập thất bại

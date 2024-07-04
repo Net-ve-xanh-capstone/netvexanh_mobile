@@ -4,11 +4,16 @@ part 'map/account.g.dart';
 
 @JsonSerializable()
 class Account {
-  String? Username;
-  String? Id;
-  String? Role;
+    String? username;
+    String? avatar;
+    DateTime? birthday;
+    String? fullName;
+    String? email;
+    String? address;
+    String? phone;
+    bool gender;
 
-  Account(this.Username, this.Id, this.Role);
+  Account(this.username, this.avatar, this.birthday, this.fullName, this.email, this.address, this.phone, this.gender);
 
   /// A necessary factory constructor for creating a new User instance
   /// from a map. Pass the map to the generated `_$UserFromJson()` constructor.

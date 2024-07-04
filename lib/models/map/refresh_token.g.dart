@@ -7,22 +7,22 @@ part of '../refresh_token.dart';
 // **************************************************************************
 
 RefreshToken _$RefreshTokenFromJson(Map<String, dynamic> json) => RefreshToken(
-      json['Current'] == null
+      json['current'] == null
           ? null
-          : DateTime.parse(json['Current'] as String),
-      json['CreateTime'] == null
+          : DateTime.parse(json['current'] as String),
+      json['createTime'] == null
           ? null
-          : DateTime.parse(json['CreateTime'] as String),
-      json['Expired'] == null
+          : DateTime.parse(json['createTime'] as String),
+      json['expired'] == null
           ? null
-          : DateTime.parse(json['Expired'] as String),
-      json['Token'] as String?,
+          : DateTime.parse(json['expired'] as String),
+      json['token'] as String?,
     );
 
 Map<String, dynamic> _$RefreshTokenToJson(RefreshToken instance) =>
     <String, dynamic>{
-      'Current': instance.Current?.toIso8601String(),
-      'CreateTime': instance.CreateTime?.toIso8601String(),
-      'Expired': instance.Expired?.toIso8601String(),
-      'Token': instance.Token,
+      'current': instance.current?.toIso8601String(),
+      'createTime': instance.createTime?.toIso8601String(),
+      'expired': instance.expired?.toIso8601String(),
+      'token': instance.token,
     };

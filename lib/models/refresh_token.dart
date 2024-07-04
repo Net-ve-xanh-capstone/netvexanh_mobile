@@ -4,12 +4,12 @@ part 'map/refresh_token.g.dart';
 
 @JsonSerializable()
 class RefreshToken {
-    DateTime? Current;
-    DateTime? CreateTime;
-    DateTime? Expired;
-    String? Token;
+    DateTime? current;
+    DateTime? createTime;
+    DateTime? expired;
+    String? token;
 
-  RefreshToken(this.Current, this.CreateTime, this.Expired, this.Token);
+  RefreshToken(this.current, this.createTime, this.expired, this.token);
 
   /// A necessary factory constructor for creating a new User instance
   /// from a map. Pass the map to the generated `_$UserFromJson()` constructor.
