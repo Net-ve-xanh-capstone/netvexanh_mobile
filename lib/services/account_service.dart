@@ -7,7 +7,8 @@ import 'package:netvexanh_mobile/models/account.dart';
 
 class AccountService {
   Future<bool> login(String username, String password) async {
-    const url = 'https://webapp-240702160733.azurewebsites.net/login';
+    const url =
+        'https://webapp-240702160733.azurewebsites.net/api/authentications/login';
 
     try {
       final response = await http.post(

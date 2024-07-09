@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously, constant_identifier_names
+
 import 'dart:async';
 import 'package:netvexanh_mobile/screens/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -53,27 +55,32 @@ class _HomeDrawerState extends State<HomeDrawer> {
       DrawerList(
         index: DrawerIndex.Schedule,
         labelName: 'Schedule',
-        icon: Icon(Icons.assessment),
+        icon: const Icon(Icons.assessment),
+      ),
+      DrawerList(
+        index: DrawerIndex.Ratting,
+        labelName: 'ratting',
+        icon: const Icon(Icons.assessment),
       ),
       DrawerList(
         index: DrawerIndex.Notification,
         labelName: 'Notification',
-        icon: Icon(Icons.notifications),
+        icon: const Icon(Icons.notifications),
       ),
       DrawerList(
         index: DrawerIndex.FeedBack,
         labelName: 'FeedBack',
-        icon: Icon(Icons.help),
+        icon: const Icon(Icons.help),
       ),
       DrawerList(
         index: DrawerIndex.Invite,
         labelName: 'Invite Friend',
-        icon: Icon(Icons.group),
+        icon: const Icon(Icons.group),
       ),
       DrawerList(
         index: DrawerIndex.Share,
         labelName: 'Rate the app',
-        icon: Icon(Icons.share),
+        icon: const Icon(Icons.share),
       )
     ];
   }
@@ -83,7 +90,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
     var brightness = MediaQuery.of(context).platformBrightness;
     bool isLightMode = brightness == Brightness.light;
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 38, 67, 86).withOpacity(0.5),
+      backgroundColor: const Color.fromARGB(255, 38, 67, 86).withOpacity(0.5),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisAlignment: MainAxisAlignment.start,
@@ -136,7 +143,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
                                     if (snapshot.connectionState ==
                                         ConnectionState.waiting) {
                                       // Display a loading indicator while waiting
-                                      return CircularProgressIndicator();
+                                      return const CircularProgressIndicator();
                                     } else if (snapshot.hasError) {
                                       // Handle error scenario (optional)
                                       return Image.asset(
@@ -167,10 +174,10 @@ class _HomeDrawerState extends State<HomeDrawer> {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
                           // Display a loading indicator while waiting
-                          return Text('Loading...');
+                          return const Text('Loading...');
                         } else if (snapshot.hasError) {
                           // Handle error scenario (optional)
-                          return Text('Error fetching username');
+                          return const Text('Error fetching username');
                         } else if (snapshot.hasData &&
                             snapshot.data != null &&
                             snapshot.data!.isNotEmpty) {
@@ -184,7 +191,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
                             ),
                           );
                         } else {
-                          return Text('No username set');
+                          return const Text('No username set');
                         }
                       },
                     ),
@@ -325,14 +332,14 @@ class _HomeDrawerState extends State<HomeDrawer> {
                             0.0,
                             0.0),
                         child: Padding(
-                          padding: EdgeInsets.only(top: 8, bottom: 8),
+                          padding: const EdgeInsets.only(top: 8, bottom: 8),
                           child: Container(
                             width:
                                 MediaQuery.of(context).size.width * 0.75 - 64,
                             height: 46,
                             decoration: BoxDecoration(
                               color: Colors.blue.withOpacity(0.2),
-                              borderRadius: new BorderRadius.only(
+                              borderRadius: const BorderRadius.only(
                                 topLeft: Radius.circular(0),
                                 topRight: Radius.circular(28),
                                 bottomLeft: Radius.circular(0),
@@ -357,10 +364,11 @@ class _HomeDrawerState extends State<HomeDrawer> {
 }
 
 enum DrawerIndex {
+  // ignore: duplicate_ignore
+  // ignore: constant_identifier_names
   Schedule,
   Notification,
-  
-  
+  Ratting,
   HOME,
   FeedBack,
   Help,

@@ -1,6 +1,7 @@
 import 'package:netvexanh_mobile/screens/app_theme.dart';
 import 'package:netvexanh_mobile/custom_drawer/drawer_user_controller.dart';
 import 'package:netvexanh_mobile/custom_drawer/home_drawer.dart';
+import 'package:netvexanh_mobile/screens/rating_screen.dart';
 import 'package:netvexanh_mobile/screens/schedules_screen.dart';
 import 'package:netvexanh_mobile/screens/feedback_screen.dart';
 import 'package:netvexanh_mobile/screens/help_screen.dart';
@@ -57,6 +58,11 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
             screenView = const MyHomePage();
           });
           break;
+        case DrawerIndex.Ratting:
+          setState(() {
+            screenView = const RatingScreen();
+          });
+          break;
         case DrawerIndex.Help:
           setState(() {
             screenView = HelpScreen();
@@ -69,7 +75,7 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
           break;
         case DrawerIndex.Schedule:
           setState(() {
-            screenView =const ScheduleScreen();
+            screenView = const ScheduleScreen();
           });
           break;
         case DrawerIndex.Invite:
