@@ -1,24 +1,29 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:netvexanh_mobile/models/painting.dart';
 
-part 'test.g.dart';
+part 'schedule_award.g.dart';
 
 @JsonSerializable()
-class Test {
-  String Id;
-  int quantity;
-  List<Painting> images;
+class ScheduleAward {
+  String id;
+  int? quantity;
+  String? awardId;
+  String? rank;
+  String? scheduleId;
+  List<Painting>? paintingViewModelsList;
 
-  Test(this.Id, this.quantity, this.images);
+
+  ScheduleAward(this.id, this.quantity, this.awardId, this.rank, this.scheduleId, this.paintingViewModelsList);
 
   /// A necessary factory constructor for creating a new User instance
   /// from a map. Pass the map to the generated `_$UserFromJson()` constructor.
   /// The constructor is named after the source class, in this case, User.
 
-  factory Test.fromJson(Map<String, dynamic> json) => _$TestFromJson(json);
+  factory ScheduleAward.fromJson(Map<String, dynamic> json) =>
+      _$ScheduleAwardFromJson(json);
 
   /// `toJson` is the convention for a class to declare support for serialization
   /// to JSON. The implementation simply calls the private, generated
   /// helper method `_$UserToJson`.
-  Map<String, dynamic> toJson() => _$TestToJson(this);
+  Map<String, dynamic> toJson() => _$ScheduleAwardToJson(this);
 }

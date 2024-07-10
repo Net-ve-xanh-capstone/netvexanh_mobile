@@ -6,29 +6,29 @@ part 'painting.g.dart';
 @JsonSerializable()
 class Painting {
 
-    String Id;
-    String? Image;
-    String? Name;
-    String? Description;
-    late DateTime SubmitTime;
-    String? RoundTopicId;
-    String? ScheduleId;
-    String? Status;
-    String? Code;
-    String? OwnerName;
+    String id;
+    String? image;
+    String? name;
+    String? description;
+    late DateTime submitTime;
+    String? roundTopicId;
+    String? scheduleId;
+    String? status;
+    String? code;
+    String? ownerName;
 
   //Painting(this.Id, this.Image, this.Name, this.Description, this.SubmitTime, this.RoundTopicId, this.ScheduleId, this.Status, this.Code, this.OwnerName);
     Painting({
-    required this.Id,
-    required this.Image,
-    required this.Name,
-    required this.Description,
-    required this.SubmitTime,
-    required this.RoundTopicId,
-    required this.ScheduleId,
-    required this.Status,
-    required this.Code,
-    required this.OwnerName,
+    required this.id,
+    required this.image,
+    required this.name,
+    required this.description,
+    required this.submitTime,
+    required this.roundTopicId,
+    required this.scheduleId,
+    required this.status,
+    required this.code,
+    required this.ownerName,
   });
 
   /// A necessary factory constructor for creating a new User instance

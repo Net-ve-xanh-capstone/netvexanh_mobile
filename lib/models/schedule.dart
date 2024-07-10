@@ -8,8 +8,9 @@ class Schedule {
   String? roundId;
   String? description;
   String? examinerId;
+  String? status;
 
-  Schedule(this.id, this.roundId, this.description, this.examinerId);
+  Schedule(this.id, this.roundId, this.description, this.examinerId, this.status);
 
   /// A necessary factory constructor for creating a new User instance
   /// from a map. Pass the map to the generated `_$UserFromJson()` constructor.

@@ -58,11 +58,6 @@ class _HomeDrawerState extends State<HomeDrawer> {
         icon: const Icon(Icons.assessment),
       ),
       DrawerList(
-        index: DrawerIndex.Ratting,
-        labelName: 'ratting',
-        icon: const Icon(Icons.assessment),
-      ),
-      DrawerList(
         index: DrawerIndex.Notification,
         labelName: 'Notification',
         icon: const Icon(Icons.notifications),
@@ -368,7 +363,6 @@ enum DrawerIndex {
   // ignore: constant_identifier_names
   Schedule,
   Notification,
-  Ratting,
   HOME,
   FeedBack,
   Help,

@@ -1,80 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:netvexanh_mobile/models/painting.dart';
 import 'package:netvexanh_mobile/screens/app_theme.dart';
-import '../models/test.dart';
-import '../services/schedule_service.dart'; // Đường dẫn đến ScheduleService
+import 'package:netvexanh_mobile/models/schedule_award.dart';
+import 'package:netvexanh_mobile/services/schedule_service.dart';
 
 class RatingScreen extends StatefulWidget {
-  const RatingScreen({super.key});
+  final ScheduleAward scheduleAward;
+
+  const RatingScreen({super.key, required this.scheduleAward});
 
   @override
   _RatingScreenState createState() => _RatingScreenState();
 }
 
 class _RatingScreenState extends State<RatingScreen> {
-  final Test test = Test(
-    '1',
-    3, // Số lượng ảnh có thể chọn
-    [
-      Painting(
-        Id: '1',
-        Image:
-            'https://hpconnect.vn/wp-content/uploads/2020/02/anh-dep-cau-rong-da-nang-viet-nam-10.jpg',
-        Name: 'Painting 1',
-        Description: 'Description 1',
-        SubmitTime: DateTime.now(),
-        RoundTopicId: 'R1',
-        ScheduleId: 'S1',
-        Status: 'Completed',
-        Code: 'C2',
-        OwnerName: 'Owner 2',
-      ),
-      Painting(
-        Id: '2',
-        Image:
-            'https://i.pinimg.com/originals/74/6b/27/746b27c541347a6d4b62be2f8f735115.jpg',
-        Name: 'Painting 2',
-        Description: 'Description 2',
-        SubmitTime: DateTime.now(),
-        RoundTopicId: 'R1',
-        ScheduleId: 'S1',
-        Status: 'Completed',
-        Code: 'C2',
-        OwnerName: 'Owner 2',
-      ),
-      Painting(
-        Id: '3',
-        Image:
-            'https://th.bing.com/th/id/OIP.5SYt0p1NhUxZXqKVIon7_QHaE7?rs=1&pid=ImgDetMain',
-        Name: 'Painting 3',
-        Description: 'Description 3',
-        SubmitTime: DateTime.now(),
-        RoundTopicId: 'R1',
-        ScheduleId: 'S1',
-        Status: 'Completed',
-        Code: 'C2',
-        OwnerName: 'Owner 2',
-      ),
-      Painting(
-        Id: '4',
-        Image:
-            'https://th.bing.com/th/id/OIP.RkyiF_F9Fumnd4655gsHtAAAAA?rs=1&pid=ImgDetMain',
-        Name: 'Painting 4',
-        Description: 'Description 4',
-        SubmitTime: DateTime.now(),
-        RoundTopicId: 'R1',
-        ScheduleId: 'S1',
-        Status: 'Completed',
-        Code: 'C2',
-        OwnerName: 'Owner 2',
-      ),
-      // Thêm các đối tượng Painting khác tương tự
-    ],
-  );
-
   Set<String> selectedImageIds = {}; // Danh sách ID ảnh đã chọn
-
   final ScheduleService _scheduleService = ScheduleService();
+  String? errorMessage; // Biến trạng thái để lưu thông báo lỗi
 
   @override
   Widget build(BuildContext context) {
@@ -89,85 +31,129 @@ class _RatingScreenState extends State<RatingScreen> {
           children: <Widget>[
             appBar(),
             Expanded(
-              child: GridView.builder(
-                padding: const EdgeInsets.all(12),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 12.0,
-                  crossAxisSpacing: 12.0,
-                  childAspectRatio: 1.5,
-                ),
-                itemCount: test.images.length,
-                itemBuilder: (context, index) {
-                  final painting = test.images[index];
-                  final isSelected = selectedImageIds
-                      .contains(painting.Id); // Kiểm tra ID ảnh đã chọn
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        if (isSelected) {
-                          selectedImageIds.remove(painting.Id);
-                        } else {
-                          if (selectedImageIds.length < test.quantity) {
-                            selectedImageIds.add(painting.Id);
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                    'Chỉ có thể chọn ${test.quantity} ảnh'),
+              child: Stack(
+                children: [
+                  GridView.builder(
+                    padding: const EdgeInsets.all(12),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 12.0,
+                      crossAxisSpacing: 12.0,
+                      childAspectRatio: 1.5,
+                    ),
+                    itemCount: widget.scheduleAward.paintingViewModelsList?.length,
+                    itemBuilder: (context, index) {
+                      final painting = widget.scheduleAward.paintingViewModelsList?[index];
+                      final isSelected = selectedImageIds.contains(painting?.id); // Kiểm tra ID ảnh đã chọn
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            if (isSelected) {
+                              selectedImageIds.remove(painting!.id);
+                            } else {
+                              if (selectedImageIds.length < widget.scheduleAward.quantity!) {
+                                selectedImageIds.add(painting!.id);
+                                errorMessage = null; // Xóa thông báo lỗi nếu có
+                              } else {
+                                errorMessage = 'Chỉ có thể chọn ${widget.scheduleAward.quantity} ảnh';
+                              }
+                            }
+                          });
+                        },
+                        onLongPress: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PaintingDetailScreen(painting: painting!),
+                            ),
+                          );
+                        },
+                        child: Stack(
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: isSelected ? Colors.blue : Colors.transparent,
+                                  width: 2,
+                                ),
+                                borderRadius: BorderRadius.circular(8),
                               ),
-                            );
-                          }
-                        }
-                      });
-                    },
-                    onLongPress: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              PaintingDetailScreen(painting: painting),
+                              child: Image.network(
+                                painting!.image!,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            if (isSelected)
+                              const Positioned(
+                                top: 8,
+                                right: 8,
+                                child: Icon(
+                                  Icons.check_circle,
+                                  color: Colors.blue,
+                                ),
+                              ),
+                          ],
                         ),
                       );
                     },
-                    child: Stack(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color:
-                                  isSelected ? Colors.blue : Colors.transparent,
-                              width: 2,
-                            ),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Image.network(
-                            painting.Image!,
-                            fit: BoxFit.cover,
-                          ),
+                  ),
+                  if (errorMessage != null)
+                    Positioned(
+                      top: 10,
+                      left: 10,
+                      right: 10,
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                        if (isSelected)
-                          Positioned(
-                            top: 8,
-                            right: 8,
-                            child: Icon(
-                              Icons.check_circle,
-                              color: Colors.blue,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                errorMessage!,
+                                style: const TextStyle(color: Colors.white),
+                              ),
                             ),
-                          ),
-                      ],
+                            IconButton(
+                              icon: const Icon(Icons.close, color: Colors.white),
+                              onPressed: () {
+                                setState(() {
+                                  errorMessage = null;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                  );
-                },
+                  Positioned(
+                    bottom: 20,
+                    left: 20,
+                    right: 20,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white, backgroundColor: Colors.blue,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        elevation: 0, // Loại bỏ bóng đổ
+                      ),
+                      onPressed: () async {
+                        // Gửi danh sách ID của ảnh đã chọn đến API
+                        bool success = await _scheduleService.postSelectedImages(widget.scheduleAward.scheduleId!, selectedImageIds.toList(), widget.scheduleAward.rank!);
+                        if (success) {
+                          // ignore: use_build_context_synchronously
+                          Navigator.pop(context); // Trở về trang trước đó
+                        }
+                      },
+                      child: const Text('Gửi danh sách ảnh đã chọn'),
+                    ),
+                  ),
+                ],
               ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                // Gửi danh sách ID của ảnh đã chọn đến API
-                _scheduleService.postSelectedImages(
-                    test.Id, selectedImageIds.toList());
-              },
-              child: const Text('Gửi danh sách ảnh đã chọn'),
             ),
           ],
         ),
@@ -214,8 +200,7 @@ class _RatingScreenState extends State<RatingScreen> {
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
-                  borderRadius:
-                      BorderRadius.circular(AppBar().preferredSize.height),
+                  borderRadius: BorderRadius.circular(AppBar().preferredSize.height),
                   child: Icon(
                     Icons.dashboard,
                     color: isLightMode ? AppTheme.dark_grey : AppTheme.white,
@@ -233,38 +218,37 @@ class _RatingScreenState extends State<RatingScreen> {
 class PaintingDetailScreen extends StatelessWidget {
   final Painting painting;
 
-  const PaintingDetailScreen({Key? key, required this.painting})
-      : super(key: key);
+  const PaintingDetailScreen({super.key, required this.painting});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(painting.Name ?? 'Chi tiết ảnh'),
+        title: Text(painting.name ?? 'Chi tiết ảnh'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Image.network(painting.Image!),
-            SizedBox(height: 16),
+            Image.network(painting.image!),
+            const SizedBox(height: 16),
             Text(
-              painting.Name ?? 'No Name',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              painting.name ?? 'No Name',
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text(
-              painting.Description ?? 'No Description',
-              style: TextStyle(fontSize: 16),
+              painting.description ?? 'No Description',
+              style: const TextStyle(fontSize: 16),
             ),
-            SizedBox(height: 8),
-            Text('Owner: ${painting.OwnerName ?? 'Unknown'}'),
-            Text('Status: ${painting.Status ?? 'Unknown'}'),
-            Text('Submit Time: ${painting.SubmitTime.toString()}'),
-            Text('Round Topic ID: ${painting.RoundTopicId ?? 'Unknown'}'),
-            Text('Schedule ID: ${painting.ScheduleId ?? 'Unknown'}'),
-            Text('Code: ${painting.Code ?? 'Unknown'}'),
+            const SizedBox(height: 8),
+            Text('Owner: ${painting.ownerName ?? 'Unknown'}'),
+            Text('Status: ${painting.status ?? 'Unknown'}'),
+            Text('Submit Time: ${painting.submitTime.toString()}'),
+            Text('Round Topic ID: ${painting.roundTopicId ?? 'Unknown'}'),
+            Text('Schedule ID: ${painting.scheduleId ?? 'Unknown'}'),
+            Text('Code: ${painting.code ?? 'Unknown'}'),
           ],
         ),
       ),

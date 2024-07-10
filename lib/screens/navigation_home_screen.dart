@@ -1,7 +1,6 @@
 import 'package:netvexanh_mobile/screens/app_theme.dart';
 import 'package:netvexanh_mobile/custom_drawer/drawer_user_controller.dart';
 import 'package:netvexanh_mobile/custom_drawer/home_drawer.dart';
-import 'package:netvexanh_mobile/screens/rating_screen.dart';
 import 'package:netvexanh_mobile/screens/schedules_screen.dart';
 import 'package:netvexanh_mobile/screens/feedback_screen.dart';
 import 'package:netvexanh_mobile/screens/help_screen.dart';
@@ -10,7 +9,10 @@ import 'package:netvexanh_mobile/screens/invite_friend_screen.dart';
 import 'package:flutter/material.dart';
 
 class NavigationHomeScreen extends StatefulWidget {
+  const NavigationHomeScreen({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _NavigationHomeScreenState createState() => _NavigationHomeScreenState();
 }
 
@@ -56,11 +58,6 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
         case DrawerIndex.HOME:
           setState(() {
             screenView = const MyHomePage();
-          });
-          break;
-        case DrawerIndex.Ratting:
-          setState(() {
-            screenView = const RatingScreen();
           });
           break;
         case DrawerIndex.Help:
