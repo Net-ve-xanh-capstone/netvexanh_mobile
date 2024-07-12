@@ -1,7 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:netvexanh_mobile/models/painting.dart';
 
-part 'schedule_award.g.dart';
+part 'map/schedule_award.g.dart';
 
 @JsonSerializable()
 class ScheduleAward {
@@ -10,10 +10,11 @@ class ScheduleAward {
   String? awardId;
   String? rank;
   String? scheduleId;
+  String? status;
   List<Painting>? paintingViewModelsList;
 
 
-  ScheduleAward(this.id, this.quantity, this.awardId, this.rank, this.scheduleId, this.paintingViewModelsList);
+  ScheduleAward(this.id, this.quantity, this.awardId, this.rank, this.scheduleId, this.status, this.paintingViewModelsList);
 
   /// A necessary factory constructor for creating a new User instance
   /// from a map. Pass the map to the generated `_$UserFromJson()` constructor.

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:netvexanh_mobile/models/schedule_award.dart';
 import 'package:netvexanh_mobile/screens/app_theme.dart';
-import 'package:netvexanh_mobile/services/schedule_award_service.dart';
+import 'package:netvexanh_mobile/services/schedule_service.dart';
 import 'rating_screen.dart';
+import 'navigation_home_screen.dart';
 
 class ScheduleAwardScreen extends StatelessWidget {
-  final List<ScheduleAward> scheduleAwards;
+  final String scheduleId;
 
-  const ScheduleAwardScreen({Key? key, required this.scheduleAwards})
-      : super(key: key);
+  const ScheduleAwardScreen({Key? key, required this.scheduleId}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -25,84 +25,105 @@ class ScheduleAwardScreen extends StatelessWidget {
           ),
         ),
         backgroundColor: isLightMode ? AppTheme.white : AppTheme.nearlyBlack,
-      ),
-      body: ListView.builder(
-        itemCount: scheduleAwards.length,
-        itemBuilder: (context, index) {
-          final award = scheduleAwards[index];
-          return Container(
-            margin: EdgeInsets.symmetric(vertical: 30, horizontal: 16),
-            padding: EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(8),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black26,
-                  blurRadius: 4,
-                  offset: Offset(0, 2),
-                ),
-              ],
-            ),
-            child: ListTile(
-              leading: CircleAvatar(
-                child: _getRankIcon(award),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: isLightMode ? AppTheme.darkText : AppTheme.white),
+          onPressed: () {
+            Navigator.of(context).popUntil((route) => route.isFirst);
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const NavigationHomeScreen(),
               ),
-              title: _getRank(award),
-              onTap: () => _loadScheduleDetailsAndNavigate(context, award.id),
-            ),
-          );
+            );
+          },
+        ),
+      ),
+      body: FutureBuilder<List<ScheduleAward>>(
+        future: ScheduleService.getScheduleById(scheduleId),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Failed to load schedule awards'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(child: Text('No schedule awards found'));
+          } else {
+            return ListView.builder(
+              itemCount: snapshot.data!.length,
+              itemBuilder: (context, index) {
+                final award = snapshot.data![index];
+                bool canSelect = award.status == 'rating'; // Chỉ cho phép chọn khi status là 'rating'
+
+                return GestureDetector(
+                  onTap: () {
+                    if (canSelect) {
+                      _navigateToRatingScreen(context, award.id); // Chuyển sang màn hình rating khi được chọn
+                    }
+                  },
+                  child: Container(
+                    margin: EdgeInsets.symmetric(vertical: 30, horizontal: 16),
+                    padding: EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: canSelect ? Colors.white : Colors.grey.withOpacity(0.5),
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 4,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: ListTile(
+                      leading: CircleAvatar(child: _getRankIcon(award)),
+                      title: _getRank(award),
+                    ),
+                  ),
+                );
+              },
+            );
+          }
         },
       ),
     );
   }
 
   Widget _getRankIcon(ScheduleAward award) {
-    if (award.rank == 'FirstPrize') {
-      return Image.asset('assets/images/1.png');
-    } else if (award.rank == 'SecondPrize') {
-      return Image.asset('assets/images/2.png');
-    } else if (award.rank == 'ThirdPrize') {
-      return Image.asset('assets/images/3.png');
-    } else if (award.rank == 'ConsolationPrize') {
-      return Image.asset('assets/images/4.png');
-    } else {
-      return Image.asset('assets/images/0.png');
+    switch (award.rank) {
+      case 'FirstPrize':
+        return Image.asset('assets/images/1.png');
+      case 'SecondPrize':
+        return Image.asset('assets/images/2.png');
+      case 'ThirdPrize':
+        return Image.asset('assets/images/3.png');
+      case 'ConsolationPrize':
+        return Image.asset('assets/images/4.png');
+      default:
+        return Image.asset('assets/images/0.png');
     }
   }
 
   Widget _getRank(ScheduleAward award) {
-    if (award.rank == 'FirstPrize') {
-      return Text('Giải Nhất');
-    } else if (award.rank == 'SecondPrize') {
-      return Text('Giải Nhì');
-    } else if (award.rank == 'ThirdPrize') {
-      return Text('Giải Ba');
-    } else if (award.rank == 'ConsolationPrize') {
-      return Text('Giải Khuyến Khích');
-    } else {
-      return Text('Vòng Loại');
+    switch (award.rank) {
+      case 'FirstPrize':
+        return Text('Giải Nhất');
+      case 'SecondPrize':
+        return Text('Giải Nhì');
+      case 'ThirdPrize':
+        return Text('Giải Ba');
+      case 'ConsolationPrize':
+        return Text('Giải Khuyến Khích');
+      default:
+        return Text('Vòng Loại');
     }
   }
 
-  void _loadScheduleDetailsAndNavigate(BuildContext context, String id) {
-    ScheduleAwardService.getScheduleAwardById(id).then((scheduleAward) {
-      // Navigate to RatingScreen and pass data
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => RatingScreen(
-            scheduleAward: scheduleAward,
-          ),
-        ),
-      );
-    }).catchError((error) {
-      // Handle error
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to load schedule details: $error'),
-        ),
-      );
-    });
+  void _navigateToRatingScreen(BuildContext context, String id) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => RatingScreen(scheduleAwardId: id),
+      ),
+    );
   }
 }

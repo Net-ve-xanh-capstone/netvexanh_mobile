@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'dart:ffi';
-import 'package:animate_do/animate_do.dart';
 import 'package:http/http.dart' as http;
 import 'package:netvexanh_mobile/models/schedule.dart';
 import 'package:netvexanh_mobile/models/schedule_award.dart';

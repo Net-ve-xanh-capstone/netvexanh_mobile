@@ -6,7 +6,7 @@ import 'package:netvexanh_mobile/screens/schedule_awards_screen.dart';
 import 'package:netvexanh_mobile/services/schedule_service.dart';
 
 class ScheduleScreen extends StatefulWidget {
-  const ScheduleScreen({super.key});
+  ScheduleScreen({Key? key}) : super(key: key);
 
   @override
   _ScheduleScreenState createState() => _ScheduleScreenState();
@@ -52,15 +52,23 @@ class _ScheduleScreenState extends State<ScheduleScreen>
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
                 final schedule = snapshot.data![index];
+                bool canSelect =
+                    schedule.status == 'ratting';
+                Color tileColor =
+                    canSelect ? Colors.white : Colors.grey.withOpacity(0.5);
+
                 return GestureDetector(
                   onTap: () {
-                    _loadScheduleDetailsAndNavigate(schedule.id); // Gọi hàm để load chi tiết lịch trình và chuyển màn hình
+                    if (canSelect) {
+                      _navigateToScheduleAwardScreen(schedule
+                          .id); // Gọi hàm để load chi tiết lịch trình và chuyển màn hình
+                    }
                   },
                   child: Container(
                     margin: EdgeInsets.symmetric(vertical: 30, horizontal: 16),
                     padding: EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: tileColor,
                       borderRadius: BorderRadius.circular(8),
                       boxShadow: [
                         BoxShadow(
@@ -85,25 +93,14 @@ class _ScheduleScreenState extends State<ScheduleScreen>
     );
   }
 
-  // Hàm gọi để load chi tiết lịch trình dựa trên ID và chuyển sang màn hình mới
-  void _loadScheduleDetailsAndNavigate(String id) {
-    ScheduleService.getScheduleById(id)
-        .then((scheduleAwards) {
-      // Xử lý khi lấy dữ liệu thành công
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ScheduleAwardScreen(scheduleAwards: scheduleAwards), // Truyền scheduleAwards vào màn hình mới
-        ),
-      );
-    })
-        .catchError((error) {
-      // Xử lý khi gặp lỗi
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to load schedule details: $error'),
-        ),
-      );
-    });
+  // Hàm gọi để chuyển sang màn hình mới với ID của lịch trình
+  void _navigateToScheduleAwardScreen(String id) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            ScheduleAwardScreen(scheduleId: id), // Truyền ID vào màn hình mới
+      ),
+    );
   }
 }

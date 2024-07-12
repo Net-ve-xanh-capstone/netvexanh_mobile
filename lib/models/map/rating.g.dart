@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'rating.dart';
+part of '../rating.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator

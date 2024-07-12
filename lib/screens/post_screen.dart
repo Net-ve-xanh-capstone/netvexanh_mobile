@@ -1,12 +1,12 @@
 import 'package:netvexanh_mobile/screens/app_theme.dart';
 import 'package:flutter/material.dart';
 
-class FeedbackScreen extends StatefulWidget {
+class PosScreen extends StatefulWidget {
   @override
-  _FeedbackScreenState createState() => _FeedbackScreenState();
+  _PosScreenState createState() => _PosScreenState();
 }
 
-class _FeedbackScreenState extends State<FeedbackScreen> {
+class _PosScreenState extends State<PosScreen> {
   @override
   void initState() {
     super.initState();

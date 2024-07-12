@@ -1,7 +1,7 @@
 
 import 'package:json_annotation/json_annotation.dart';
 
-part 'painting.g.dart';
+part 'map/painting.g.dart';
 
 @JsonSerializable()
 class Painting {

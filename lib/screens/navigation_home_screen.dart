@@ -2,9 +2,8 @@ import 'package:netvexanh_mobile/screens/app_theme.dart';
 import 'package:netvexanh_mobile/custom_drawer/drawer_user_controller.dart';
 import 'package:netvexanh_mobile/custom_drawer/home_drawer.dart';
 import 'package:netvexanh_mobile/screens/schedules_screen.dart';
-import 'package:netvexanh_mobile/screens/feedback_screen.dart';
+import 'package:netvexanh_mobile/screens/post_screen.dart';
 import 'package:netvexanh_mobile/screens/help_screen.dart';
-import 'package:netvexanh_mobile/screens/home_screen.dart';
 import 'package:netvexanh_mobile/screens/invite_friend_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -23,7 +22,7 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
   @override
   void initState() {
     drawerIndex = DrawerIndex.HOME;
-    screenView = const MyHomePage();
+    screenView = ScheduleScreen();
     super.initState();
   }
 
@@ -55,11 +54,6 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
     if (drawerIndex != drawerIndexdata) {
       drawerIndex = drawerIndexdata;
       switch (drawerIndex) {
-        case DrawerIndex.HOME:
-          setState(() {
-            screenView = const MyHomePage();
-          });
-          break;
         case DrawerIndex.Help:
           setState(() {
             screenView = HelpScreen();
@@ -72,7 +66,7 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
           break;
         case DrawerIndex.Schedule:
           setState(() {
-            screenView = const ScheduleScreen();
+            screenView = ScheduleScreen();
           });
           break;
         case DrawerIndex.Invite:
