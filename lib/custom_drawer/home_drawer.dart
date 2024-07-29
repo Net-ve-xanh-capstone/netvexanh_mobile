@@ -1,18 +1,15 @@
-// ignore_for_file: use_build_context_synchronously, constant_identifier_names
-
-import 'dart:async';
-import 'package:netvexanh_mobile/screens/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:netvexanh_mobile/screens/app_theme.dart';
 import 'package:netvexanh_mobile/screens/login_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeDrawer extends StatefulWidget {
-  const HomeDrawer(
-      {Key? key,
-      this.screenIndex,
-      this.iconAnimationController,
-      this.callBackIndex})
-      : super(key: key);
+  const HomeDrawer({
+    Key? key,
+    this.screenIndex,
+    this.iconAnimationController,
+    this.callBackIndex,
+  }) : super(key: key);
 
   final AnimationController? iconAnimationController;
   final DrawerIndex? screenIndex;
@@ -26,6 +23,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
   List<DrawerList>? drawerList;
   late Future<String?> avatar;
   late Future<String?> name;
+  late Future<String?> role;
 
   @override
   void initState() {
@@ -38,6 +36,8 @@ class _HomeDrawerState extends State<HomeDrawer> {
     final prefs = await SharedPreferences.getInstance();
     avatar = Future.value(prefs.getString('avatar'));
     name = Future.value(prefs.getString('name'));
+    role = Future.value(prefs.getString('role'));
+    setDrawerListArray();
   }
 
   Future<void> signOut(BuildContext context) async {
@@ -50,22 +50,26 @@ class _HomeDrawerState extends State<HomeDrawer> {
     );
   }
 
-  void setDrawerListArray() {
+  void setDrawerListArray() async {
+    final prefs = await SharedPreferences.getInstance();
+    String? currentRole = prefs.getString('role');
+
     drawerList = <DrawerList>[
       DrawerList(
-        index: DrawerIndex.Schedule,
-        labelName: 'Schedule',
-        icon: const Icon(Icons.assessment),
+        index: DrawerIndex.POST,
+        labelName: 'Post',
+        icon: const Icon(Icons.article_rounded),
       ),
+      if (currentRole != 'Competitor')
+        DrawerList(
+          index: DrawerIndex.Schedule,
+          labelName: 'Schedule',
+          icon: const Icon(Icons.assessment),
+        ),
       DrawerList(
         index: DrawerIndex.Notification,
         labelName: 'Notification',
         icon: const Icon(Icons.notifications),
-      ),
-      DrawerList(
-        index: DrawerIndex.FeedBack,
-        labelName: 'FeedBack',
-        icon: const Icon(Icons.help),
       ),
       DrawerList(
         index: DrawerIndex.Invite,
@@ -78,6 +82,8 @@ class _HomeDrawerState extends State<HomeDrawer> {
         icon: const Icon(Icons.share),
       )
     ];
+
+    setState(() {});
   }
 
   @override
@@ -103,16 +109,16 @@ class _HomeDrawerState extends State<HomeDrawer> {
                     animation: widget.iconAnimationController!,
                     builder: (BuildContext context, Widget? child) {
                       return ScaleTransition(
-                        scale: AlwaysStoppedAnimation<double>(1.0 -
-                            (widget.iconAnimationController!.value) * 0.2),
+                        scale: AlwaysStoppedAnimation<double>(
+                            1.0 - (widget.iconAnimationController!.value) * 0.2),
                         child: RotationTransition(
-                          turns: AlwaysStoppedAnimation<double>(Tween<double>(
-                                      begin: 0.0, end: 24.0)
-                                  .animate(CurvedAnimation(
-                                      parent: widget.iconAnimationController!,
-                                      curve: Curves.fastOutSlowIn))
-                                  .value /
-                              360),
+                          turns: AlwaysStoppedAnimation<double>(
+                              Tween<double>(begin: 0.0, end: 24.0)
+                                      .animate(CurvedAnimation(
+                                          parent: widget.iconAnimationController!,
+                                          curve: Curves.fastOutSlowIn))
+                                      .value /
+                                  360),
                           child: Container(
                             height: 120,
                             width: 120,
@@ -126,31 +132,22 @@ class _HomeDrawerState extends State<HomeDrawer> {
                               ],
                             ),
                             child: ClipRRect(
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(60.0)),
+                              borderRadius: const BorderRadius.all(Radius.circular(60.0)),
                               child: ClipRRect(
-                                borderRadius: const BorderRadius.all(
-                                    Radius.circular(60.0)),
+                                borderRadius: const BorderRadius.all(Radius.circular(60.0)),
                                 child: FutureBuilder<String?>(
-                                  future:
-                                      avatar, // The Future object to wait for
+                                  future: avatar,
                                   builder: (context, snapshot) {
-                                    if (snapshot.connectionState ==
-                                        ConnectionState.waiting) {
-                                      // Display a loading indicator while waiting
+                                    if (snapshot.connectionState == ConnectionState.waiting) {
                                       return const CircularProgressIndicator();
                                     } else if (snapshot.hasError) {
-                                      // Handle error scenario (optional)
-                                      return Image.asset(
-                                          'assets/images/userImage.png');
+                                      return Image.asset('assets/images/userImage.png');
                                     } else if (snapshot.hasData &&
                                         snapshot.data != null &&
                                         snapshot.data!.isNotEmpty) {
-                                      // Check if the avatar URL is not null and not empty
                                       return Image.network(snapshot.data!);
                                     } else {
-                                      return Image.asset(
-                                          'assets/images/userImage.png');
+                                      return Image.asset('assets/images/userImage.png');
                                     }
                                   },
                                 ),
@@ -164,19 +161,15 @@ class _HomeDrawerState extends State<HomeDrawer> {
                   Padding(
                     padding: const EdgeInsets.only(top: 8, left: 4),
                     child: FutureBuilder<String?>(
-                      future: name, // The Future object to wait for
+                      future: name,
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          // Display a loading indicator while waiting
+                        if (snapshot.connectionState == ConnectionState.waiting) {
                           return const Text('Loading...');
                         } else if (snapshot.hasError) {
-                          // Handle error scenario (optional)
                           return const Text('Error fetching username');
                         } else if (snapshot.hasData &&
                             snapshot.data != null &&
                             snapshot.data!.isNotEmpty) {
-                          // Check if the username is not null and not empty
                           return Text(
                             snapshot.data!,
                             style: TextStyle(
@@ -359,12 +352,10 @@ class _HomeDrawerState extends State<HomeDrawer> {
 }
 
 enum DrawerIndex {
-  // ignore: duplicate_ignore
-  // ignore: constant_identifier_names
   Schedule,
   Notification,
   HOME,
-  FeedBack,
+  POST,
   Help,
   Share,
   About,

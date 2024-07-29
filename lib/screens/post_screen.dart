@@ -1,151 +1,199 @@
-import 'package:netvexanh_mobile/screens/app_theme.dart';
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:netvexanh_mobile/models/list_post.dart';
+import 'package:netvexanh_mobile/screens/app_theme.dart';
+import 'package:netvexanh_mobile/screens/post_detail_screen.dart';
+import 'package:netvexanh_mobile/services/post_service.dart';
 
-class PosScreen extends StatefulWidget {
+class PostScreen extends StatefulWidget {
+  PostScreen({Key? key}) : super(key: key);
+
   @override
-  _PosScreenState createState() => _PosScreenState();
+  _PostScreenState createState() => _PostScreenState();
 }
 
-class _PosScreenState extends State<PosScreen> {
+class _PostScreenState extends State<PostScreen> with TickerProviderStateMixin {
+  final ScrollController _scrollController = ScrollController();
+  List<ListPost> posts = [];
+  int currentPage = 1;
+  int pageSize = 2;
+  int totalPages = 1;
+  bool isLoading = false;
+  bool isDataLoaded = false;
+
   @override
   void initState() {
     super.initState();
+    _fetchPosts();
+    _scrollController.addListener(() {
+      if (_scrollController.position.atEdge) {
+        if (_scrollController.position.pixels != 0) {
+          _fetchPosts();
+        }
+      }
+    });
+  }
+
+  Future<void> _fetchPosts() async {
+    if (isLoading) return;
+
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      final result = await PostService.getPosts(pageSize, currentPage);
+      setState(() {
+        posts = result['list'];
+        totalPages = result['totalPage'];
+        isDataLoaded = true;
+      });
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to load posts: $error')),
+      );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     var brightness = MediaQuery.of(context).platformBrightness;
     bool isLightMode = brightness == Brightness.light;
-    return Container(
-      color: isLightMode ? AppTheme.nearlyWhite : AppTheme.nearlyBlack,
-      child: SafeArea(
-        top: false,
-        child: Scaffold(
-          backgroundColor:
-              isLightMode ? AppTheme.nearlyWhite : AppTheme.nearlyBlack,
-          body: SingleChildScrollView(
-            child: SizedBox(
-              height: MediaQuery.of(context).size.height,
-              child: Column(
-                children: <Widget>[
-                  Container(
-                    padding: EdgeInsets.only(
-                        top: MediaQuery.of(context).padding.top,
-                        left: 16,
-                        right: 16),
-                    child: Image.asset('assets/images/feedbackImage.png'),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.only(top: 8),
-                    child: Text(
-                      'Your FeedBack',
-                      style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: isLightMode ? Colors.black : Colors.white),
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.only(top: 16),
-                    child: Text(
-                      'Give your best time for this moment.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontSize: 16,
-                          color: isLightMode ? Colors.black : Colors.white),
-                    ),
-                  ),
-                  _buildComposer(),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 16),
-                    child: Center(
-                      child: Container(
-                        width: 120,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: isLightMode ? Colors.blue : Colors.white,
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(4.0)),
-                          boxShadow: <BoxShadow>[
-                            BoxShadow(
-                                color: Colors.grey.withOpacity(0.6),
-                                offset: const Offset(4, 4),
-                                blurRadius: 8.0),
-                          ],
-                        ),
-                        child: Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            onTap: () {
-                              FocusScope.of(context).requestFocus(FocusNode());
-                            },
-                            child: Center(
-                              child: Padding(
-                                padding: const EdgeInsets.all(4.0),
-                                child: Text(
-                                  'Send',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                    color: isLightMode
-                                        ? Colors.white
-                                        : Colors.black,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
+    return Scaffold(
+      backgroundColor: isLightMode ? AppTheme.white : AppTheme.nearlyBlack,
+      appBar: AppBar(
+        title: Text(
+          'Post List',
+          style: TextStyle(
+            fontSize: 24,
+            color: isLightMode ? AppTheme.darkText : AppTheme.white,
           ),
         ),
+        backgroundColor: isLightMode ? AppTheme.white : AppTheme.nearlyBlack,
+        leading: Container(),
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: isDataLoaded
+                ? ListView.builder(
+                    controller: _scrollController,
+                    itemCount: posts.length,
+                    itemBuilder: (context, index) {
+                      final post = posts[index];
+                      return GestureDetector(
+                        onTap: () {
+                          if (isDataLoaded) {
+                            _navigateToPostDetail(post.id!);
+                          }
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(
+                              vertical: 8, horizontal: 16),
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            color: const Color.fromARGB(255, 37, 53, 53),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Color.fromARGB(66, 255, 252, 252),
+                                blurRadius: 4,
+                                offset: Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                post.title ?? 'No Title',
+                                style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white),
+                              ),
+                              const SizedBox(height: 8),
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: post.image != null
+                                    ? Image.network(
+                                        post.image!,
+                                        width: double.infinity,
+                                        height: 200,
+                                        fit: BoxFit.cover,
+                                      )
+                                    : Image.asset(
+                                        'assets/images/userImage.png',
+                                        width: double.infinity,
+                                        height: 200,
+                                        fit: BoxFit.cover,
+                                      ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  )
+                : const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+          ),
+          _buildPageSelector(),
+        ],
       ),
     );
   }
 
-  Widget _buildComposer() {
-    return Padding(
-      padding: const EdgeInsets.only(top: 16, left: 32, right: 32),
-      child: Container(
-        decoration: BoxDecoration(
-          color: AppTheme.white,
-          borderRadius: BorderRadius.circular(8),
-          boxShadow: <BoxShadow>[
-            BoxShadow(
-                color: Colors.grey.withOpacity(0.8),
-                offset: const Offset(4, 4),
-                blurRadius: 8),
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(25),
-          child: Container(
-            padding: const EdgeInsets.all(4.0),
-            constraints: const BoxConstraints(minHeight: 80, maxHeight: 160),
-            color: AppTheme.white,
-            child: SingleChildScrollView(
+  void _navigateToPostDetail(String id) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PostDetailScreen(postId: id),
+      ),
+    );
+  }
+
+  Widget _buildPageSelector() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      color: Colors.transparent,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: List.generate(totalPages, (index) {
+          int pageNumber = index + 1;
+          return InkWell(
+            onTap: () {
+              setState(() {
+                currentPage = pageNumber;
+                isDataLoaded = false;
+                _fetchPosts();
+              });
+            },
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 4.0),
               padding:
-                  const EdgeInsets.only(left: 10, right: 10, top: 0, bottom: 0),
-              child: TextField(
-                maxLines: null,
-                onChanged: (String txt) {},
+                  const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+              decoration: BoxDecoration(
+                color: currentPage == pageNumber
+                    ? Colors.blue
+                    : Colors.grey.shade300.withOpacity(0.5),
+                borderRadius: BorderRadius.circular(4.0),
+              ),
+              child: Text(
+                pageNumber.toString(),
                 style: TextStyle(
-                  fontFamily: AppTheme.fontName,
-                  fontSize: 16,
-                  color: AppTheme.dark_grey,
+                  color:
+                      currentPage == pageNumber ? Colors.white : Colors.black,
                 ),
-                cursorColor: Colors.blue,
-                decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: 'Enter your feedback...'),
               ),
             ),
-          ),
-        ),
+          );
+        }),
       ),
     );
   }

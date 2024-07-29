@@ -52,12 +52,12 @@ class ScheduleAwardScreen extends StatelessWidget {
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
                 final award = snapshot.data![index];
-                bool canSelect = award.status == 'rating'; // Chỉ cho phép chọn khi status là 'rating'
+                bool canSelect = award.status == 'Rating';
 
                 return GestureDetector(
                   onTap: () {
                     if (canSelect) {
-                      _navigateToRatingScreen(context, award.id); // Chuyển sang màn hình rating khi được chọn
+                      _navigateToRatingScreen(context, award.id);
                     }
                   },
                   child: Container(

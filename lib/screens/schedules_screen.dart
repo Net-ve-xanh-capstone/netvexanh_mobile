@@ -12,8 +12,7 @@ class ScheduleScreen extends StatefulWidget {
   _ScheduleScreenState createState() => _ScheduleScreenState();
 }
 
-class _ScheduleScreenState extends State<ScheduleScreen>
-    with TickerProviderStateMixin {
+class _ScheduleScreenState extends State<ScheduleScreen> with TickerProviderStateMixin {
   late Future<List<Schedule>> list;
 
   @override
@@ -37,40 +36,48 @@ class _ScheduleScreenState extends State<ScheduleScreen>
           ),
         ),
         backgroundColor: isLightMode ? AppTheme.white : AppTheme.nearlyBlack,
+        leading: Container(),
       ),
       body: FutureBuilder<List<Schedule>>(
         future: list,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(child: Text('Failed to load schedules'));
+            return const Center(child: Text('Failed to load schedules', style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      )));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No schedules found'));
+            return const Center(child: Text('No schedules found', style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),));
           } else {
             return ListView.builder(
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
                 final schedule = snapshot.data![index];
-                bool canSelect =
-                    schedule.status == 'ratting';
-                Color tileColor =
-                    canSelect ? Colors.white : Colors.grey.withOpacity(0.5);
+                bool canSelect = schedule.status == 'Rating';
+                Color tileColor = canSelect
+                    ? Colors.white
+                    : Colors.grey.shade300.withOpacity(0.5);
 
                 return GestureDetector(
                   onTap: () {
                     if (canSelect) {
-                      _navigateToScheduleAwardScreen(schedule
-                          .id); // Gọi hàm để load chi tiết lịch trình và chuyển màn hình
+                      _navigateToScheduleAwardScreen(schedule.id);
                     }
                   },
                   child: Container(
-                    margin: EdgeInsets.symmetric(vertical: 30, horizontal: 16),
-                    padding: EdgeInsets.all(16),
+                    margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                    padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: tileColor,
                       borderRadius: BorderRadius.circular(8),
-                      boxShadow: [
+                      boxShadow: const [
                         BoxShadow(
                           color: Colors.black26,
                           blurRadius: 4,
@@ -80,8 +87,8 @@ class _ScheduleScreenState extends State<ScheduleScreen>
                     ),
                     child: ListTile(
                       leading: CircleAvatar(child: Text('${index + 1}')),
-                      title: Text(schedule.id),
-                      subtitle: Text(schedule.description ?? 'No Description'),
+                      title: Text('Nét Vẽ Xanh ${schedule.year ?? '20XX'}'),
+                      subtitle: Text(schedule.round ?? 'No Description'),
                     ),
                   ),
                 );
@@ -93,13 +100,11 @@ class _ScheduleScreenState extends State<ScheduleScreen>
     );
   }
 
-  // Hàm gọi để chuyển sang màn hình mới với ID của lịch trình
   void _navigateToScheduleAwardScreen(String id) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) =>
-            ScheduleAwardScreen(scheduleId: id), // Truyền ID vào màn hình mới
+        builder: (context) => ScheduleAwardScreen(scheduleId: id),
       ),
     );
   }

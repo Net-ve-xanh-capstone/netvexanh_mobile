@@ -6,13 +6,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ScheduleService {
   static const String baseUrl =
-      'https://webapp-240702160733.azurewebsites.net/api/awardschedules';
+      'https://netvexanh.azurewebsites.net/api/awardschedules';
 
   static Future<List<ScheduleAward>> getScheduleById(String id) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('jwtToken');
     String url =
-        'https://webapp-240702160733.azurewebsites.net/api/awardschedules/schedule/$id';
+        'https://netvexanh.azurewebsites.net/api/awardschedules/schedule/$id';
     try {
       var response = await http.get(Uri.parse(url), headers: {
         'Content-Type': 'application/json',
@@ -36,7 +36,7 @@ class ScheduleService {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('jwtToken');
     String? id = prefs.getString('Id');
-    String url = 'https://webapp-240702160733.azurewebsites.net/examiner/$id';
+    String url = 'https://netvexanh.azurewebsites.net/examiner/$id';
     var response = await http.get(Uri.parse(url), headers: {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token'
@@ -53,7 +53,7 @@ class ScheduleService {
   }
 
   Future<bool> postSelectedImages(String scheduleId, List<String> selectedIds, String rank) async {
-    String url = 'https://webapp-240702160733.azurewebsites.net/api/schedules';
+    String url = 'https://netvexanh.azurewebsites.net/api/schedules';
 
     if (rank == 'FirstPrize') {
       url = '$url/RatingFirstPrize';
@@ -69,7 +69,7 @@ class ScheduleService {
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('jwtToken');
-    String? id = prefs.getString('Id');
+    prefs.getString('Id');
 
     // Tạo body của request
     final body = jsonEncode({

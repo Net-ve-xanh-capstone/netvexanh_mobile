@@ -1,8 +1,8 @@
 import 'package:netvexanh_mobile/screens/app_theme.dart';
 import 'package:netvexanh_mobile/custom_drawer/drawer_user_controller.dart';
 import 'package:netvexanh_mobile/custom_drawer/home_drawer.dart';
-import 'package:netvexanh_mobile/screens/schedules_screen.dart';
 import 'package:netvexanh_mobile/screens/post_screen.dart';
+import 'package:netvexanh_mobile/screens/schedules_screen.dart';
 import 'package:netvexanh_mobile/screens/help_screen.dart';
 import 'package:netvexanh_mobile/screens/invite_friend_screen.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +22,7 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
   @override
   void initState() {
     drawerIndex = DrawerIndex.HOME;
-    screenView = ScheduleScreen();
+    screenView = PostScreen();
     super.initState();
   }
 
@@ -59,9 +59,9 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
             screenView = HelpScreen();
           });
           break;
-        case DrawerIndex.FeedBack:
+        case DrawerIndex.POST:
           setState(() {
-            screenView = FeedbackScreen();
+            screenView = PostScreen();
           });
           break;
         case DrawerIndex.Schedule:

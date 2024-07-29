@@ -8,7 +8,7 @@ import 'package:netvexanh_mobile/models/account.dart';
 class AccountService {
   Future<bool> login(String username, String password) async {
     const url =
-        'https://webapp-240702160733.azurewebsites.net/api/authentications/login';
+        'https://netvexanh.azurewebsites.net/api/authentications/login';
 
     try {
       final response = await http.post(
@@ -27,6 +27,12 @@ class AccountService {
         final jsonBody = jsonDecode(response.body);
         final jwtToken = jsonBody['jwtToken'];
         final refreshToken = RefreshToken.fromJson(jsonBody['refreshToken']);
+        Map<String, dynamic> decodedToken = JwtDecoder.decode(jwtToken);
+        var role = decodedToken['role'];
+        if(role == 'Admin' || role == 'Staff') {
+                print('This Role dont accept permission');
+                return false;
+        }
         await save(jwtToken, refreshToken);
         return true;
       } else {
@@ -46,6 +52,7 @@ class AccountService {
     Map<String, dynamic> decodedToken = JwtDecoder.decode(jwtToken);
     await prefs.setString('Id', decodedToken['Id']);
     await prefs.setString('name', decodedToken['nameid']);
+    await prefs.setString('role', decodedToken['role']);
     await prefs.setString('jwtToken', jwtToken);
     await prefs.setString('refreshToken', token);
   }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:netvexanh_mobile/models/painting.dart';
 import 'package:netvexanh_mobile/screens/app_theme.dart';
 import 'package:netvexanh_mobile/models/schedule_award.dart';
+import 'package:netvexanh_mobile/screens/painting_detail_screen.dart';
 import 'package:netvexanh_mobile/screens/schedule_awards_screen.dart';
 import 'package:netvexanh_mobile/screens/schedules_screen.dart';
 import 'package:netvexanh_mobile/services/schedule_award_service.dart';
@@ -57,7 +57,7 @@ class _RatingScreenState extends State<RatingScreen> {
           children: <Widget>[
             appBar(context),
             if (isLoading)
-              Center(child: CircularProgressIndicator())
+              const Center(child: CircularProgressIndicator())
             else if (scheduleAward == null)
               Center(child: Text(errorMessage ?? 'Failed to load schedule award'))
             else
@@ -80,10 +80,10 @@ class _RatingScreenState extends State<RatingScreen> {
                           onTap: () {
                             setState(() {
                               if (isSelected) {
-                                selectedImageIds.remove(painting!.id);
+                                selectedImageIds.remove(painting.id);
                               } else {
                                 if (selectedImageIds.length < scheduleAward!.quantity!) {
-                                  selectedImageIds.add(painting!.id);
+                                  selectedImageIds.add(painting.id);
                                   errorMessage = null; // Xóa thông báo lỗi nếu có
                                 } else {
                                   errorMessage = 'Chỉ có thể chọn ${scheduleAward!.quantity} ảnh';
@@ -95,7 +95,7 @@ class _RatingScreenState extends State<RatingScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => PaintingDetailScreen(painting: painting!),
+                                builder: (context) => PaintingDetailScreen(painting: painting),
                               ),
                             );
                           },
@@ -255,47 +255,6 @@ class _RatingScreenState extends State<RatingScreen> {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class PaintingDetailScreen extends StatelessWidget {
-  final Painting painting;
-
-  const PaintingDetailScreen({super.key, required this.painting});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(painting.name ?? 'Chi tiết ảnh'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Image.network(painting.image!),
-            const SizedBox(height: 16),
-            Text(
-              painting.name ?? 'No Name',
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              painting.description ?? 'No Description',
-              style: const TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 8),
-            Text('Owner: ${painting.ownerName ?? 'Unknown'}'),
-            Text('Status: ${painting.status ?? 'Unknown'}'),
-            Text('Submit Time: ${painting.submitTime.toString()}'),
-            Text('Round Topic ID: ${painting.roundTopicId ?? 'Unknown'}'),
-            Text('Schedule ID: ${painting.scheduleId ?? 'Unknown'}'),
-            Text('Code: ${painting.code ?? 'Unknown'}'),
-          ],
-        ),
       ),
     );
   }

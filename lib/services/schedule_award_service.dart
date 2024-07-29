@@ -9,7 +9,7 @@ class ScheduleAwardService {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('jwtToken');
     String url =
-        'https://webapp-240702160733.azurewebsites.net/api/awardschedules/$id';
+        'https://netvexanh.azurewebsites.net/api/awardschedules/$id';
     try {
       var response = await http.get(Uri.parse(url), headers: {
         'Content-Type': 'application/json',
