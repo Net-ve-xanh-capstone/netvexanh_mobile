@@ -11,7 +11,7 @@ class ScheduleAward {
   String? rank;
   String? scheduleId;
   String? status;
-  List<Painting>? paintingViewModelsList;
+  List<Painting> paintingViewModelsList;
 
 
   ScheduleAward(this.id, this.quantity, this.awardId, this.rank, this.scheduleId, this.status, this.paintingViewModelsList);

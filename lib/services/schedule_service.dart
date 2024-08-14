@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:netvexanh_mobile/models/painting_result.dart';
 import 'package:netvexanh_mobile/models/schedule.dart';
 import 'package:netvexanh_mobile/models/schedule_award.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -52,20 +53,8 @@ class ScheduleService {
     }
   }
 
-  Future<bool> postSelectedImages(String scheduleId, List<String> selectedIds, String rank) async {
-    String url = 'https://netvexanh.azurewebsites.net/api/schedules';
-
-    if (rank == 'FirstPrize') {
-      url = '$url/RatingFirstPrize';
-    } else if (rank == 'SecondPrize') {
-      url = '$url/RatingSecondPrize';
-    } else if (rank == 'ThirdPrize') {
-      url = '$url/RatingThirdPrize';
-    } else if (rank == 'ConsolationPrize') {
-      url = '$url/RatingConsolationPrize';
-    } else {
-      url = '$url/RatingPreliminaryRound';
-    }
+  Future<bool> RatingPreliminaryRound(String scheduleId, String awardId , List<PaintingResult> result) async {
+    String url = 'https://netvexanh.azurewebsites.net/api/schedules/RatingPreliminaryRound';
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('jwtToken');
@@ -74,7 +63,8 @@ class ScheduleService {
     // Tạo body của request
     final body = jsonEncode({
       'scheduleId': scheduleId,
-      'paintings': selectedIds,
+      'awardId': awardId,
+      'paintings': result
     });
     try {
       var response = await http.post(Uri.parse(url),

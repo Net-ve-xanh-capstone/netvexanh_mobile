@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:netvexanh_mobile/models/schedule.dart';
 import 'package:netvexanh_mobile/screens/app_theme.dart';
+import 'package:netvexanh_mobile/screens/rating_screen.dart';
 import 'package:netvexanh_mobile/screens/schedule_awards_screen.dart';
 import 'package:netvexanh_mobile/services/schedule_service.dart';
 
@@ -12,7 +13,8 @@ class ScheduleScreen extends StatefulWidget {
   _ScheduleScreenState createState() => _ScheduleScreenState();
 }
 
-class _ScheduleScreenState extends State<ScheduleScreen> with TickerProviderStateMixin {
+class _ScheduleScreenState extends State<ScheduleScreen>
+    with TickerProviderStateMixin {
   late Future<List<Schedule>> list;
 
   @override
@@ -44,21 +46,32 @@ class _ScheduleScreenState extends State<ScheduleScreen> with TickerProviderStat
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return const Center(child: Text('Failed to load schedules', style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      )));
+            return const Center(
+                child: Text('Failed to load schedules',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    )));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('No schedules found', style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),));
+            return const Center(
+                child: Text(
+              'No schedules found',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ));
           } else {
             return ListView.builder(
-              itemCount: snapshot.data!.length,
+              itemCount: snapshot.hasData ? snapshot.data!.length : 0,
               itemBuilder: (context, index) {
+                if (!snapshot.hasData) {
+                  // Handle the case when snapshot has no data
+                  return Center(child: Text('No data available'));
+                }
+
                 final schedule = snapshot.data![index];
                 bool canSelect = schedule.status == 'Rating';
                 Color tileColor = canSelect
@@ -72,7 +85,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> with TickerProviderStat
                     }
                   },
                   child: Container(
-                    margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                    margin:
+                        const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: tileColor,
@@ -88,7 +102,11 @@ class _ScheduleScreenState extends State<ScheduleScreen> with TickerProviderStat
                     child: ListTile(
                       leading: CircleAvatar(child: Text('${index + 1}')),
                       title: Text('Nét Vẽ Xanh ${schedule.year ?? '20XX'}'),
-                      subtitle: Text(schedule.round ?? 'No Description'),
+                      subtitle: Text(
+                        '${schedule.round ?? 'No Description'} - ${schedule.endDate ?? 'No End Date'}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ),
                 );
@@ -104,7 +122,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> with TickerProviderStat
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ScheduleAwardScreen(scheduleId: id),
+        builder: (context) => RatingScreen(scheduleId: id),
       ),
     );
   }

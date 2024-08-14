@@ -1,4 +1,6 @@
 
+import 'dart:ui';
+
 import 'package:json_annotation/json_annotation.dart';
 
 part 'map/painting.g.dart';
@@ -10,12 +12,12 @@ class Painting {
     String? image;
     String? name;
     String? description;
-    late DateTime submitTime;
     String? roundTopicId;
     String? scheduleId;
     String? status;
     String? code;
     String? ownerName;
+    Color? borderColor;
 
   //Painting(this.Id, this.Image, this.Name, this.Description, this.SubmitTime, this.RoundTopicId, this.ScheduleId, this.Status, this.Code, this.OwnerName);
     Painting({
@@ -23,12 +25,12 @@ class Painting {
     required this.image,
     required this.name,
     required this.description,
-    required this.submitTime,
     required this.roundTopicId,
     required this.scheduleId,
     required this.status,
     required this.code,
     required this.ownerName,
+    this.borderColor,
   });
 
   /// A necessary factory constructor for creating a new User instance
@@ -42,4 +44,32 @@ class Painting {
   /// to JSON. The implementation simply calls the private, generated
   /// helper method `_$UserToJson`.
   Map<String, dynamic> toJson() => _$PaintingToJson(this);
+
+ // Define the copyWith method
+  Painting copyWith({
+    String? id,
+    String? image,
+    String? name,
+    String? description,
+    String? roundTopicId,
+    String? scheduleId,
+    String? status,
+    String? code,
+    String? ownerName,
+    Color? borderColor,
+  }) {
+    return Painting(
+      id: id ?? this.id,
+      image: image ?? this.image,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      roundTopicId: roundTopicId ?? this.roundTopicId,
+      scheduleId: scheduleId ?? this.scheduleId,
+      status: status ?? this.status,
+      code: code ?? this.code,
+      ownerName: ownerName ?? this.ownerName,
+      borderColor: borderColor ?? this.borderColor,
+    );
+  }
+  
 }

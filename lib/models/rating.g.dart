@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of '../rating.dart';
+part of 'rating.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
@@ -8,7 +8,9 @@ part of '../rating.dart';
 
 Rating _$RatingFromJson(Map<String, dynamic> json) => Rating(
       json['scheduleId'] as String,
-      (json['paintings'] as List<dynamic>?)?.map((e) => e as String).toList(),
+      (json['paintings'] as List<dynamic>?)
+          ?.map((e) => PaintingResult.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$RatingToJson(Rating instance) => <String, dynamic>{

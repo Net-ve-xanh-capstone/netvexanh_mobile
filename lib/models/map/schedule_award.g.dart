@@ -14,8 +14,8 @@ ScheduleAward _$ScheduleAwardFromJson(Map<String, dynamic> json) =>
       json['rank'] as String?,
       json['scheduleId'] as String?,
       json['status'] as String,
-      (json['paintingViewModelsList'] as List<dynamic>?)
-          ?.map((e) => Painting.fromJson(e as Map<String, dynamic>))
+      (json['paintingViewModelsList'] as List<dynamic>)
+          .map((e) => Painting.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 
