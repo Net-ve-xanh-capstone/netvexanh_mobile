@@ -53,8 +53,8 @@ class ScheduleService {
     }
   }
 
-  Future<bool> RatingPreliminaryRound(String scheduleId, String awardId , List<PaintingResult> result) async {
-    String url = 'https://netvexanh.azurewebsites.net/api/schedules/RatingPreliminaryRound';
+  Future<bool> RatingPreliminaryRound(String scheduleId, List<PaintingResult> result) async {
+    String url = 'https://netvexanh.azurewebsites.net/api/schedules/Rating';
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('jwtToken');
@@ -63,11 +63,10 @@ class ScheduleService {
     // Tạo body của request
     final body = jsonEncode({
       'scheduleId': scheduleId,
-      'awardId': awardId,
       'paintings': result
     });
     try {
-      var response = await http.post(Uri.parse(url),
+      var response = await http.put(Uri.parse(url),
           headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer $token'

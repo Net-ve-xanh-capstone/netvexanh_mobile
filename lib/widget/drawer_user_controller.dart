@@ -1,5 +1,5 @@
 import 'package:netvexanh_mobile/screens/app_theme.dart';
-import 'package:netvexanh_mobile/custom_drawer/home_drawer.dart';
+import 'package:netvexanh_mobile/widget/home_drawer.dart';
 import 'package:flutter/material.dart';
 
 class DrawerUserController extends StatefulWidget {
@@ -23,7 +23,6 @@ class DrawerUserController extends StatefulWidget {
   final DrawerIndex? screenIndex;
 
   @override
-  // ignore: library_private_types_in_public_api
   _DrawerUserControllerState createState() => _DrawerUserControllerState();
 }
 
@@ -94,10 +93,8 @@ class _DrawerUserControllerState extends State<DrawerUserController>
 
   @override
   Widget build(BuildContext context) {
-    var brightness = MediaQuery.of(context).platformBrightness;
-    bool isLightMode = brightness == Brightness.light;
     return Scaffold(
-      backgroundColor: isLightMode ? AppTheme.white : const Color.fromARGB(255, 214, 229, 229),
+      backgroundColor: Colors.white, // Set the background color to white
       body: SingleChildScrollView(
         controller: scrollController,
         scrollDirection: Axis.horizontal,
@@ -105,18 +102,15 @@ class _DrawerUserControllerState extends State<DrawerUserController>
         child: SizedBox(
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width + widget.drawerWidth,
-          //we use with as screen width and add drawerWidth (from navigation_home_screen)
           child: Row(
             children: <Widget>[
               SizedBox(
                 width: widget.drawerWidth,
-                //we divided first drawer Width with HomeDrawer and second full-screen Width with all home screen, we called screen View
                 height: MediaQuery.of(context).size.height,
                 child: AnimatedBuilder(
                   animation: iconAnimationController!,
                   builder: (BuildContext context, Widget? child) {
                     return Transform(
-                      //transform we use for the stable drawer  we, not need to move with scroll view
                       transform: Matrix4.translationValues(
                           scrollController!.offset, 0.0, 0.0),
                       child: HomeDrawer(
@@ -138,10 +132,9 @@ class _DrawerUserControllerState extends State<DrawerUserController>
               SizedBox(
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height,
-                //full-screen Width with widget.screenView
                 child: Container(
                   decoration: BoxDecoration(
-                    color: AppTheme.white,
+                    color: Colors.white, // Set the background color to white
                     boxShadow: <BoxShadow>[
                       BoxShadow(
                           color: AppTheme.grey.withOpacity(0.6),
@@ -150,19 +143,16 @@ class _DrawerUserControllerState extends State<DrawerUserController>
                   ),
                   child: Stack(
                     children: <Widget>[
-                      //this IgnorePointer we use as touch(user Interface) widget.screen View, for example scrolloffset == 1 means drawer is close we just allow touching all widget.screen View
                       IgnorePointer(
                         ignoring: scrolloffset == 1 || false,
                         child: widget.screenView,
                       ),
-                      //alternative touch(user Interface) for widget.screen, for example, drawer is close we need to tap on a few home screen area and close the drawer
                       if (scrolloffset == 1.0)
                         InkWell(
                           onTap: () {
                             onDrawerClick();
                           },
                         ),
-                      // this just menu and arrow icon animation
                       Padding(
                         padding: EdgeInsets.only(
                             top: MediaQuery.of(context).padding.top + 8,
@@ -176,11 +166,8 @@ class _DrawerUserControllerState extends State<DrawerUserController>
                               borderRadius: BorderRadius.circular(
                                   AppBar().preferredSize.height),
                               child: Center(
-                                // if you use your own menu view UI you add form initialization
                                 child: widget.menuView ?? AnimatedIcon(
-                                        color: isLightMode
-                                            ? AppTheme.dark_grey
-                                            : AppTheme.white,
+                                        color: Colors.black,
                                         icon: widget.animatedIconData ??
                                             AnimatedIcons.arrow_menu,
                                         progress: iconAnimationController!),
@@ -206,7 +193,6 @@ class _DrawerUserControllerState extends State<DrawerUserController>
   }
 
   void onDrawerClick() {
-    //if scrollcontroller.offset != 0.0 then we set to closed the drawer(with animation to offset zero position) if is not 1 then open the drawer
     if (scrollController!.offset != 0.0) {
       scrollController?.animateTo(
         0.0,

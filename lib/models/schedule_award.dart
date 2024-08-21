@@ -6,10 +6,10 @@ part 'map/schedule_award.g.dart';
 @JsonSerializable()
 class ScheduleAward {
   String id;
-  int? quantity;
-  String? awardId;
-  String? rank;
-  String? scheduleId;
+  int quantity;
+  String awardId;
+  String rank;
+  String scheduleId;
   String? status;
   List<Painting> paintingViewModelsList;
 

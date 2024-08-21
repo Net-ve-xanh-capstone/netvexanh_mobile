@@ -1,6 +1,6 @@
 import 'package:netvexanh_mobile/screens/app_theme.dart';
-import 'package:netvexanh_mobile/custom_drawer/drawer_user_controller.dart';
-import 'package:netvexanh_mobile/custom_drawer/home_drawer.dart';
+import 'package:netvexanh_mobile/widget/drawer_user_controller.dart';
+import 'package:netvexanh_mobile/widget/home_drawer.dart';
 import 'package:netvexanh_mobile/screens/post_screen.dart';
 import 'package:netvexanh_mobile/screens/schedules_screen.dart';
 import 'package:netvexanh_mobile/screens/help_screen.dart';

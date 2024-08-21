@@ -1,7 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:netvexanh_mobile/models/painting_result.dart';
 
-part 'rating.g.dart';
+part 'map/rating.g.dart';
 
 @JsonSerializable()
 class Rating {

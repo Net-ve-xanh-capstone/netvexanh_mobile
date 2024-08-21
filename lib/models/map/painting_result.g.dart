@@ -9,17 +9,15 @@ part of '../painting_result.dart';
 PaintingResult _$PaintingResultFromJson(Map<String, dynamic> json) =>
     PaintingResult(
       json['paintingId'] as String?,
-      json['code'] as String?,
       json['awardId'] as String?,
-      json['isPass'] as bool,
       json['reason'] as String?,
+      json['code'] as String?,
+      json['isPass'] as bool,
     );
 
 Map<String, dynamic> _$PaintingResultToJson(PaintingResult instance) =>
     <String, dynamic>{
       'paintingId': instance.paintingId,
-      'code': instance.code,
       'awardId': instance.code,
-      'isPass': instance.isPass,
       'reason': instance.reason,
     };

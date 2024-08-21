@@ -5,12 +5,13 @@ part 'map/painting_result.g.dart';
 @JsonSerializable()
 class PaintingResult {
   String? paintingId;
-  String? code;
   String? awardId;
-  bool isPass;
   String? reason;
+  String? code;
+  bool isPass;
+  
 
-  PaintingResult(this.paintingId ,this.code, this.awardId, this.isPass, this.reason);
+  PaintingResult(this.paintingId ,this.awardId, this.code, this.reason, this.isPass);
 
   /// A necessary factory constructor for creating a new User instance
   /// from a map. Pass the map to the generated `_$UserFromJson()` constructor.

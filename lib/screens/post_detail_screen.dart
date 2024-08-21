@@ -19,7 +19,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   @override
   void initState() {
     super.initState();
-    postDetail = (PostService.getPostDetails(widget.postId)) as Future<Post>;
+    postDetail = PostService.getPostDetails(widget.postId);
   }
 
   @override
@@ -27,21 +27,27 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     var brightness = MediaQuery.of(context).platformBrightness;
     bool isLightMode = brightness == Brightness.light;
     return Scaffold(
-      backgroundColor:
-          isLightMode ? AppTheme.white : AppTheme.nearlyBlack,
+      backgroundColor: isLightMode ? AppTheme.white : AppTheme.nearlyBlack,
       appBar: AppBar(
-        backgroundColor:
-            isLightMode ? AppTheme.white : AppTheme.nearlyBlack,
+        backgroundColor: isLightMode ? AppTheme.white : AppTheme.nearlyBlack,
+        iconTheme:
+            IconThemeData(color: isLightMode ? Colors.black : Colors.white),
       ),
       body: FutureBuilder<Post>(
         future: postDetail,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(child: Text('Failed to load post details'));
+            return Center(
+                child: Text('Failed to load post details',
+                    style: TextStyle(
+                        color: isLightMode ? Colors.black : Colors.white)));
           } else if (!snapshot.hasData) {
-            return Center(child: Text('No details found'));
+            return Center(
+                child: Text('No details found',
+                    style: TextStyle(
+                        color: isLightMode ? Colors.black : Colors.white)));
           } else {
             final post = snapshot.data!;
             return Padding(
@@ -50,45 +56,56 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                 child: Container(
                   padding: const EdgeInsets.all(16.0),
                   decoration: BoxDecoration(
-                    color: Color.fromARGB(255, 43, 58, 58),
+                    color: isLightMode
+                        ? Colors.white
+                        : const Color.fromARGB(255, 43, 58, 58),
                     borderRadius: BorderRadius.circular(8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: isLightMode ? Colors.black12 : Colors.black54,
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Row(
+                      Row(
                         children: [
-                          CircleAvatar(
+                          const CircleAvatar(
                             backgroundImage:
                                 AssetImage('assets/images/icon.png'),
                             radius: 20,
                           ),
-                          SizedBox(width: 8),
+                          const SizedBox(width: 8),
                           Text(
                             'Netvexanh',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                              color: isLightMode ? Colors.black : Colors.white,
                             ),
                           ),
                         ],
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       if (post.images != null && post.images!.isNotEmpty)
                         CarouselSlider(
                           options: CarouselOptions(
                             height: 300,
-                            enableInfiniteScroll: false,
+                            enableInfiniteScroll: true,
                             enlargeCenterPage: true,
                             autoPlay: true,
+                            viewportFraction: 0.9,
+                            aspectRatio: 16 / 9,
                           ),
                           items: post.images!.map((image) {
                             return Builder(
                               builder: (BuildContext context) {
                                 return Container(
                                   width: MediaQuery.of(context).size.width,
-                                  margin: EdgeInsets.symmetric(horizontal: 5.0),
+                                  margin: const EdgeInsets.symmetric(horizontal: 5.0),
                                   child: Image.network(
                                     image.url ?? '',
                                     fit: BoxFit.cover,
@@ -98,19 +115,21 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                             );
                           }).toList(),
                         ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       Text(
                         post.title ?? 'No Title',
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: isLightMode ? Colors.black : Colors.white,
                         ),
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       Text(
                         post.description ?? 'No Description',
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(
+                            color:
+                                isLightMode ? Colors.black87 : Colors.white70),
                       ),
                     ],
                   ),

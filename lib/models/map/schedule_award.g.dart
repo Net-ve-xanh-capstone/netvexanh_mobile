@@ -9,10 +9,10 @@ part of '../schedule_award.dart';
 ScheduleAward _$ScheduleAwardFromJson(Map<String, dynamic> json) =>
     ScheduleAward(
       json['id'] as String,
-      json['quantity'] as int?,
-      json['awardId'] as String?,
-      json['rank'] as String?,
-      json['scheduleId'] as String?,
+      json['quantity'] as int,
+      json['awardId'] as String,
+      json['rank'] as String,
+      json['scheduleId'] as String,
       json['status'] as String,
       (json['paintingViewModelsList'] as List<dynamic>)
           .map((e) => Painting.fromJson(e as Map<String, dynamic>))

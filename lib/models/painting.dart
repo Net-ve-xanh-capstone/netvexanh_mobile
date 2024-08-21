@@ -12,20 +12,20 @@ class Painting {
     String? image;
     String? name;
     String? description;
-    String? roundTopicId;
+    String? topicName;
     String? scheduleId;
     String? status;
     String? code;
     String? ownerName;
     Color? borderColor;
 
-  //Painting(this.Id, this.Image, this.Name, this.Description, this.SubmitTime, this.RoundTopicId, this.ScheduleId, this.Status, this.Code, this.OwnerName);
+  //Painting(this.Id, this.Image, this.Name, this.Description, this.SubmitTime, this.topicName, this.ScheduleId, this.Status, this.Code, this.OwnerName);
     Painting({
     required this.id,
     required this.image,
     required this.name,
     required this.description,
-    required this.roundTopicId,
+    required this.topicName,
     required this.scheduleId,
     required this.status,
     required this.code,
@@ -51,7 +51,7 @@ class Painting {
     String? image,
     String? name,
     String? description,
-    String? roundTopicId,
+    String? topicName,
     String? scheduleId,
     String? status,
     String? code,
@@ -63,7 +63,7 @@ class Painting {
       image: image ?? this.image,
       name: name ?? this.name,
       description: description ?? this.description,
-      roundTopicId: roundTopicId ?? this.roundTopicId,
+      topicName: topicName ?? this.topicName,
       scheduleId: scheduleId ?? this.scheduleId,
       status: status ?? this.status,
       code: code ?? this.code,

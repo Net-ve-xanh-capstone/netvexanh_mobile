@@ -61,20 +61,19 @@ class _PostScreenState extends State<PostScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    var brightness = MediaQuery.of(context).platformBrightness;
-    bool isLightMode = brightness == Brightness.light;
     return Scaffold(
-      backgroundColor: isLightMode ? AppTheme.white : AppTheme.nearlyBlack,
+      backgroundColor: Colors.white, // Background color set to white
       appBar: AppBar(
         title: Text(
           'Post List',
           style: TextStyle(
             fontSize: 24,
-            color: isLightMode ? AppTheme.darkText : AppTheme.white,
+            color: Colors.black, // Text color set to black for contrast
           ),
         ),
-        backgroundColor: isLightMode ? AppTheme.white : AppTheme.nearlyBlack,
-        leading: Container(),
+        backgroundColor: Colors.white, // AppBar background color set to white
+        elevation: 0, // Removes the shadow from the AppBar
+        iconTheme: IconThemeData(color: Colors.black), // Ensures icon color is black
       ),
       body: Column(
         children: [
@@ -97,10 +96,10 @@ class _PostScreenState extends State<PostScreen> with TickerProviderStateMixin {
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8),
-                            color: const Color.fromARGB(255, 37, 53, 53),
+                            color: Colors.grey.shade200, // Light grey color for post containers
                             boxShadow: const [
                               BoxShadow(
-                                color: Color.fromARGB(66, 255, 252, 252),
+                                color: Colors.grey,
                                 blurRadius: 4,
                                 offset: Offset(0, 2),
                               ),
@@ -114,7 +113,7 @@ class _PostScreenState extends State<PostScreen> with TickerProviderStateMixin {
                                 style: const TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.white),
+                                    color: Colors.black), // Text color set to black
                               ),
                               const SizedBox(height: 8),
                               ClipRRect(
@@ -161,7 +160,7 @@ class _PostScreenState extends State<PostScreen> with TickerProviderStateMixin {
   Widget _buildPageSelector() {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      color: Colors.transparent,
+      color: Colors.white, // Background color set to white
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: List.generate(totalPages, (index) {
@@ -181,14 +180,13 @@ class _PostScreenState extends State<PostScreen> with TickerProviderStateMixin {
               decoration: BoxDecoration(
                 color: currentPage == pageNumber
                     ? Colors.blue
-                    : Colors.grey.shade300.withOpacity(0.5),
+                    : Colors.grey.shade300,
                 borderRadius: BorderRadius.circular(4.0),
               ),
               child: Text(
                 pageNumber.toString(),
                 style: TextStyle(
-                  color:
-                      currentPage == pageNumber ? Colors.white : Colors.black,
+                  color: currentPage == pageNumber ? Colors.white : Colors.black,
                 ),
               ),
             ),

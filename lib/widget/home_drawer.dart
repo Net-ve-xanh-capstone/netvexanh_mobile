@@ -246,9 +246,9 @@ class _HomeDrawerState extends State<HomeDrawer> {
 
   Widget inkwell(DrawerList listData) {
     return Material(
-      color: Colors.transparent,
+      color: Color.fromARGB(0, 255, 255, 255),
       child: InkWell(
-        splashColor: Colors.grey.withOpacity(0.1),
+        splashColor: const Color.fromARGB(255, 170, 5, 5).withOpacity(0.1),
         highlightColor: Colors.transparent,
         onTap: () {
           navigationtoScreen(listData.index!);

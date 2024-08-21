@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:netvexanh_mobile/models/schedule.dart';
 import 'package:netvexanh_mobile/screens/app_theme.dart';
 import 'package:netvexanh_mobile/screens/rating_screen.dart';
-import 'package:netvexanh_mobile/screens/schedule_awards_screen.dart';
 import 'package:netvexanh_mobile/services/schedule_service.dart';
 
 class ScheduleScreen extends StatefulWidget {
@@ -15,63 +14,61 @@ class ScheduleScreen extends StatefulWidget {
 
 class _ScheduleScreenState extends State<ScheduleScreen>
     with TickerProviderStateMixin {
-  late Future<List<Schedule>> list;
+  late Future<List<Schedule>> _schedulesFuture;
 
   @override
   void initState() {
     super.initState();
-    list = ScheduleService.getSchedules();
+    _schedulesFuture = ScheduleService.getSchedules();
   }
 
   @override
   Widget build(BuildContext context) {
-    var brightness = MediaQuery.of(context).platformBrightness;
-    bool isLightMode = brightness == Brightness.light;
     return Scaffold(
-      backgroundColor: isLightMode ? AppTheme.white : AppTheme.nearlyBlack,
+      backgroundColor: Colors.white, // Background color set to white
       appBar: AppBar(
         title: Text(
           'Schedule List',
           style: TextStyle(
             fontSize: 24,
-            color: isLightMode ? AppTheme.darkText : AppTheme.white,
+            color: Colors.black, // Text color set to black for contrast
           ),
         ),
-        backgroundColor: isLightMode ? AppTheme.white : AppTheme.nearlyBlack,
-        leading: Container(),
+        backgroundColor: Colors.white, // AppBar background color set to white
+        elevation: 0, // Removes the shadow from the AppBar
+        iconTheme: IconThemeData(color: Colors.black), // Ensures icon color is black
       ),
       body: FutureBuilder<List<Schedule>>(
-        future: list,
+        future: _schedulesFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return const Center(
-                child: Text('Failed to load schedules',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    )));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(
-                child: Text(
-              'No schedules found',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+            return Center(
+              child: Text(
+                'Failed to load schedules: ${snapshot.error}',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black, // Error text color set to black
+                ),
               ),
-            ));
+            );
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(
+              child: Text(
+                'No schedules found',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black, // No data text color set to black
+                ),
+              ),
+            );
           } else {
             return ListView.builder(
-              itemCount: snapshot.hasData ? snapshot.data!.length : 0,
+              itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
-                if (!snapshot.hasData) {
-                  // Handle the case when snapshot has no data
-                  return Center(child: Text('No data available'));
-                }
-
                 final schedule = snapshot.data![index];
                 bool canSelect = schedule.status == 'Rating';
                 Color tileColor = canSelect

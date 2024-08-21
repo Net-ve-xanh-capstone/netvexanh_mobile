@@ -37,16 +37,22 @@ class _RatingScreenState extends State<RatingScreen>
     _fetchPaintings();
   }
 
- @override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Rating Screen'),
+        title: const Text('Chấm Điểm'),
         actions: [
           IconButton(
             icon: const Icon(Icons.list),
             onPressed: () async {
               _showResultsPopup(_results);
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.workspace_premium),
+            onPressed: () async {
+              _showAwardsPopup(_awards);
             },
           ),
           IconButton(
@@ -142,7 +148,6 @@ class _RatingScreenState extends State<RatingScreen>
     );
   }
 
-
   Future<void> _fetchPaintings() async {
     try {
       var listPainting =
@@ -168,104 +173,142 @@ class _RatingScreenState extends State<RatingScreen>
   }
 
   void _displayPopup(Painting painting) {
-  showDialog(
-    context: context,
-    barrierDismissible: false,
-    builder: (context) {
-      return GestureDetector(
-        onHorizontalDragEnd: (details) {
-          if (details.primaryVelocity! < 0) {
-            int currentIndex = _paintings.indexOf(painting);
-            if (currentIndex < _paintings.length - 1) {
-              Navigator.of(context).pop();
-              _showDetailPopup(_paintings[currentIndex + 1]);
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return GestureDetector(
+          onHorizontalDragEnd: (details) {
+            if (details.primaryVelocity! < 0) {
+              int currentIndex = _paintings.indexOf(painting);
+              if (currentIndex < _paintings.length - 1) {
+                Navigator.of(context).pop();
+                _showDetailPopup(_paintings[currentIndex + 1]);
+              }
+            } else if (details.primaryVelocity! > 0) {
+              int currentIndex = _paintings.indexOf(painting);
+              if (currentIndex > 0) {
+                Navigator.of(context).pop();
+                _showDetailPopup(_paintings[currentIndex - 1]);
+              }
             }
-          } else if (details.primaryVelocity! > 0) {
-            int currentIndex = _paintings.indexOf(painting);
-            if (currentIndex > 0) {
-              Navigator.of(context).pop();
-              _showDetailPopup(_paintings[currentIndex - 1]);
-            }
-          }
-        },
-        child: AlertDialog(
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                painting.code ?? 'Painting Detail',
-                style: const TextStyle(fontSize: 15),
-              ),
-              IconButton(
-                icon: const Icon(Icons.close),
-                onPressed: () => Navigator.of(context).pop(),
-              )
-            ],
-          ),
-          content: SizedBox(
-            height: 400,
-            width: 300,
-            child: Column(
+          },
+          child: AlertDialog(
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                if (painting.image != null)
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => FullscreenImageScreen(
-                            imageUrl: painting.image!,
-                          ),
-                        ),
-                      );
-                    },
-                    child: Image.network(
-                      painting.image!,
-                      fit: BoxFit.cover,
-                      height: 200,
-                      width: double.infinity,
-                    ),
-                  ),
-                const SizedBox(height: 16),
                 Text(
-                  painting.description ?? 'No Description',
-                  style: const TextStyle(fontSize: 16),
+                  painting.code ?? 'Painting Detail',
+                  style: const TextStyle(fontSize: 20),
                 ),
-                const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () => Navigator.of(context).pop(),
+                )
+              ],
+            ),
+            content: SingleChildScrollView(
+              // Add this
+              child: SizedBox(
+                width: 300,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min, // Add this
                   children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        _PassDialog(painting);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        backgroundColor: Colors.green,
+                    if (painting.image != null)
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => FullscreenImageScreen(
+                                imageUrl: painting.image!,
+                              ),
+                            ),
+                          );
+                        },
+                        child: Image.network(
+                          painting.image!,
+                          fit: BoxFit.cover,
+                          height: 200,
+                          width: double.infinity,
+                        ),
                       ),
-                      child: const Text('Đạt'),
+                    const SizedBox(height: 16),
+                    Container(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        painting.name ?? 'No Description',
+                        style: const TextStyle(
+                          fontSize: 20, // Kích thước lớn hơn cho tiêu đề
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black, // Màu sắc cho tiêu đề
+                        ),
+                        textAlign: TextAlign.left,
+                      ),
                     ),
-                    ElevatedButton(
-                      onPressed: () {
-                        _NotPassDialog(painting);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        backgroundColor: Colors.red,
+                    const SizedBox(height: 8),
+                    Container(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Chủ Đề: ${painting.topicName ?? 'No Topic'}", // Đảm bảo có văn bản thay thế khi không có chủ đề
+                        style: const TextStyle(
+                          fontSize: 17, // Kích thước chữ cho chủ đề
+                          fontWeight:
+                              FontWeight.w600, // Trọng số chữ để nổi bật hơn
+                          color: Color.fromARGB(
+                              255, 106, 167, 88), // Màu sắc cho chủ đề
+                        ),
+                        textAlign: TextAlign.left,
                       ),
-                      child: const Text('Không Đạt'),
+                    ),
+                    const SizedBox(height: 8),
+                    Container(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        painting.description ?? 'No Description',
+                        style: const TextStyle(
+                          fontSize: 15, // Kích thước nhỏ hơn cho mô tả
+                          color: Color.fromARGB(
+                              255, 143, 140, 140), // Màu sắc cho moo ta
+                        ),
+                        textAlign: TextAlign.left,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            _PassDialog(painting);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            backgroundColor: Colors.green,
+                          ),
+                          child: const Text('Đạt'),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            _NotPassDialog(painting);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            backgroundColor: Colors.red,
+                          ),
+                          child: const Text('Không Đạt'),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
+              ),
             ),
           ),
-        ),
-      );
-    },
-  );
-}
-
+        );
+      },
+    );
+  }
 
   void _NotPassDialog(Painting painting) {
     String reason = '';
@@ -325,7 +368,7 @@ class _RatingScreenState extends State<RatingScreen>
           builder: (context, setState) {
             // Determine the default value if `selectedAwardId` is null
             if (selectedAwardId == null && _awards.isNotEmpty) {
-              selectedAwardId = _awards.first.id;
+              selectedAwardId = _awards.first.awardId;
             }
 
             return AlertDialog(
@@ -340,7 +383,7 @@ class _RatingScreenState extends State<RatingScreen>
                     value: selectedAwardId,
                     items: _awards.map((award) {
                       return DropdownMenuItem<String>(
-                        value: award.id,
+                        value: award.awardId,
                         child: Text(award.rank.toString()),
                       );
                     }).toList(),
@@ -411,19 +454,46 @@ class _RatingScreenState extends State<RatingScreen>
 
     var newResult = PaintingResult(
       updatedPainting.id,
-      updatedPainting.code,
       selectedAwardId,
-      isPass,
       reason,
+      updatedPainting.code,
+      isPass,
     );
 
-    var oldValue =
-        _results.where((x) => x.paintingId == newResult.paintingId).firstOrNull;
-    if (oldValue != null) {
-      _results.remove(oldValue);
-    }
-    _results.add(newResult);
+    if (isPass == true) {
+      var oldValue = _results
+          .where((x) => x.paintingId == newResult.paintingId)
+          .firstOrNull;
+      if (oldValue != null) {
+        _results.remove(oldValue);
+      }
+      _results.add(newResult);
+      var index = _awards
+          .indexWhere((x) => x.awardId == selectedAwardId && x.quantity > 0);
 
+      if (index != -1) {
+        var award = _awards[index];
+        award.quantity = (award.quantity ?? 0) - 1;
+        _awards[index] = award;
+      } else {
+        await _showWarningDialog('Giải Thưởng Đã Hết');
+
+        return; // Exit the method early
+      }
+    } else {
+      var oldValue = _results
+          .where((x) => x.paintingId == newResult.paintingId)
+          .firstOrNull;
+      if (oldValue != null) {
+        _results.remove(oldValue);
+      }
+      _results.add(newResult);
+      var index = _awards.indexWhere((x) => x.awardId == oldValue?.awardId);
+
+      var award = _awards[index];
+      award.quantity = (award.quantity ?? 0) + 1;
+      _awards[index] = award;
+    }
     int nextIndex = _paintings.indexOf(updatedPainting) + 1;
     if (nextIndex < _paintings.length) {
       _showDetailPopup(_paintings[nextIndex]);
@@ -450,7 +520,7 @@ class _RatingScreenState extends State<RatingScreen>
       _searchController.clear();
     });
   }
- 
+
   void _showResultsPopup(List<PaintingResult> results) {
     showDialog(
       context: context,
@@ -459,7 +529,7 @@ class _RatingScreenState extends State<RatingScreen>
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Saved Results'),
+              const Text('Kết quả đã lưu'),
               IconButton(
                 icon: const Icon(Icons.close),
                 onPressed: () => Navigator.of(context).pop(),
@@ -510,50 +580,48 @@ class _RatingScreenState extends State<RatingScreen>
                     );
                   },
                 )),
-                // ElevatedButton(
-                //   onPressed: () async {
-                //     bool canProceed =
-                //         await _checkConditionsAndShowWarnings(results);
-                //     if (canProceed) {
-                //       // Tiến hành gửi kết quả
-                //       String scheduleId = _scheduleAward.scheduleId.toString();
-                //       String awardId = _scheduleAward.awardId.toString();
+                ElevatedButton(
+                  onPressed: () async {
+                    bool canProceed =
+                        await _checkConditionsAndShowWarnings(results);
+                    if (canProceed) {
+                      // Tiến hành gửi kết quả
+                      String scheduleId = _awards[0].scheduleId.toString();
 
-                //       bool success = await ScheduleService()
-                //           .RatingPreliminaryRound(scheduleId, awardId, results);
+                      bool success = await ScheduleService()
+                          .RatingPreliminaryRound(scheduleId, results);
 
-                //       // Hiển thị AlertDialog thay vì SnackBar
-                //       await showDialog(
-                //         context: context,
-                //         builder: (BuildContext context) {
-                //           return AlertDialog(
-                //             title: Text(success ? 'Thành Công' : 'Thất Bại'),
-                //             content: Text(
-                //               success
-                //                   ? 'Chấm Bài Thành Công'
-                //                   : 'Gửi kết quả thất bại',
-                //             ),
-                //             actions: <Widget>[
-                //               TextButton(
-                //                 child: const Text('OK'),
-                //                 onPressed: () {
-                //                   Navigator.of(context)
-                //                       .pop(); // Đóng AlertDialog
-                //                   if (success) {
-                //                     Navigator.of(context).pop();
-                //                     _navigateToScheduleAwardScreen(
-                //                         _scheduleAward.scheduleId!);
-                //                   }
-                //                 },
-                //               ),
-                //             ],
-                //           );
-                //         },
-                //       );
-                //     }
-                //   },
-                //   child: const Text('Send Results'),
-                // )
+                      // Hiển thị AlertDialog thay vì SnackBar
+                      await showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text(success ? 'Thành Công' : 'Thất Bại'),
+                            content: Text(
+                              success
+                                  ? 'Chấm bài thành công'
+                                  : 'Gửi kết quả thất bại',
+                            ),
+                            actions: <Widget>[
+                              TextButton(
+                                child: const Text('OK'),
+                                onPressed: () {
+                                  Navigator.of(context)
+                                      .pop(); // Đóng AlertDialog
+                                  if (success) {
+                                    Navigator.of(context).pop();
+                                    _navigateToScheduleScreen();
+                                  }
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    }
+                  },
+                  child: const Text('Gửi kết quả'),
+                )
               ],
             ),
           ),
@@ -562,22 +630,82 @@ class _RatingScreenState extends State<RatingScreen>
     );
   }
 
-  // Future<bool> _checkConditionsAndShowWarnings(
-  //     List<PaintingResult> results) async {
-  //   if (results.length != _paintings.length) {
-  //     await _showWarningDialog('Vui Lòng Chấm Điểm Cho Tất Cả Bức Tranh');
-  //     return false;
-  //   }
+  void _showAwardsPopup(List<ScheduleAward> awards) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text('Saved Results'),
+              IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+            ],
+          ),
+          content: SizedBox(
+            height: 400,
+            width: 300,
+            child: Column(
+              children: [
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: awards.length,
+                    itemBuilder: (context, index) {
+                      final result = awards[index];
+                      return Card(
+                        elevation: 4.0, // Shadow depth for the card
+                        margin: const EdgeInsets.symmetric(
+                            vertical: 8.0), // Margin between cards
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.all(
+                              16.0), // Padding inside each ListTile
+                          leading: CircleAvatar(
+                            child: _getRankIcon(
+                                result), // Function to get rank icon
+                          ),
+                          title: Text(
+                            'Giải: ${result.rank}',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16.0,
+                            ),
+                          ),
+                          subtitle: Text(
+                            'Số lượng: ${result.quantity}', // Convert quantity to String
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 
-  //   int numPass = results.where((result) => result.isPass == true).length;
-  //   if (numPass != _scheduleAward.quantity) {
-  //     await _showWarningDialog(
-  //         'Số Lượng Tranh Đạt Chưa Đủ Bạn Cần ${_scheduleAward.quantity}, Hiện Đang Có ${numPass} Bài Thi Đạt');
-  //     return false;
-  //   }
+  Future<bool> _checkConditionsAndShowWarnings(
+      List<PaintingResult> results) async {
+    if (results.length != _paintings.length) {
+      await _showWarningDialog('Vui Lòng Chấm Điểm Cho Tất Cả Bức Tranh');
+      return false;
+    }
 
-  //   return true;
-  // }
+    if (_awards.any((x) => x.quantity != 0)) {
+      await _showWarningDialog('Số Lượng Tranh Đạt Giai Chưa Đủ');
+      return false;
+    }
+
+    return true;
+  }
 
   Future<void> _showWarningDialog(String message) async {
     return showDialog(
@@ -599,7 +727,22 @@ class _RatingScreenState extends State<RatingScreen>
     );
   }
 
-  void _navigateToScheduleAwardScreen() {
+  Widget _getRankIcon(ScheduleAward award) {
+    switch (award.rank) {
+      case 'Giải Nhất':
+        return Image.asset('assets/images/1.png');
+      case 'Giải Nhì':
+        return Image.asset('assets/images/2.png');
+      case 'Giải Ba':
+        return Image.asset('assets/images/3.png');
+      case 'Giải Khuyến Khích':
+        return Image.asset('assets/images/4.png');
+      default:
+        return Image.asset('assets/images/0.png');
+    }
+  }
+
+  void _navigateToScheduleScreen() {
     Navigator.push(
       context,
       MaterialPageRoute(
