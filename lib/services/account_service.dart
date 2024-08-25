@@ -26,14 +26,13 @@ class AccountService {
         // Parse the response
         final jsonBody = jsonDecode(response.body);
         final jwtToken = jsonBody['jwtToken'];
-        final refreshToken = RefreshToken.fromJson(jsonBody['refreshToken']);
         Map<String, dynamic> decodedToken = JwtDecoder.decode(jwtToken);
         var role = decodedToken['role'];
         if(role == 'Admin' || role == 'Staff') {
                 print('This Role dont accept permission');
                 return false;
         }
-        await save(jwtToken, refreshToken);
+        await save(jwtToken);
         return true;
       } else {
         // Handle unsuccessful login
@@ -46,15 +45,13 @@ class AccountService {
     }
   }
 
-  Future<void> save(String jwtToken, RefreshToken refreshToken) async {
+  Future<void> save(String jwtToken) async {
     final prefs = await SharedPreferences.getInstance();
-    final token = jsonEncode(refreshToken.toJson());
     Map<String, dynamic> decodedToken = JwtDecoder.decode(jwtToken);
     await prefs.setString('Id', decodedToken['Id']);
     await prefs.setString('name', decodedToken['nameid']);
     await prefs.setString('role', decodedToken['role']);
     await prefs.setString('jwtToken', jwtToken);
-    await prefs.setString('refreshToken', token);
   }
 
   Future<Account?> loadAccount() async {

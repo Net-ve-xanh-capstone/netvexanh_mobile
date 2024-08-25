@@ -10,12 +10,10 @@ JwtToken _$JwtTokenFromJson(Map<String, dynamic> json) => JwtToken(
       json['jwToken'] as String?,
       json['success'] as bool?,
       json['message'] as String?,
-      RefreshToken.fromJson(json['refreshToken'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$JwtTokenToJson(JwtToken instance) => <String, dynamic>{
       'jwToken': instance.jwToken,
       'success': instance.success,
       'message': instance.message,
-      'refreshToken': instance.refreshToken,
     };
