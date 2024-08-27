@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:netvexanh_mobile/models/schedule.dart';
-import 'package:netvexanh_mobile/screens/app_theme.dart';
 import 'package:netvexanh_mobile/screens/rating_screen.dart';
 import 'package:netvexanh_mobile/services/schedule_service.dart';
 
@@ -25,16 +24,16 @@ class _ScheduleScreenState extends State<ScheduleScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Background color set to white
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Lịch Chấm',
           style: TextStyle(
             fontSize: 24,
-            color: Colors.black, // Text color set to black for contrast
+            color: Colors.black,
           ),
         ),
-        backgroundColor: Colors.white, // AppBar background color set to white
+        backgroundColor: Colors.white,
         elevation: 0,
       ),
       body: FutureBuilder<List<Schedule>>(
@@ -46,38 +45,37 @@ class _ScheduleScreenState extends State<ScheduleScreen>
             return Center(
               child: Text(
                 'Failed to load schedules: ${snapshot.error}',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black, // Error text color set to black
+                  color: Colors.black,
                 ),
               ),
             );
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(
+            return const Center(
               child: Text(
                 'Trống',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black, // No data text color set to black
+                  color: Colors.black,
                 ),
               ),
             );
           } else {
-            // Filter schedules to only show those with "Rating" status
             final ratingSchedules = snapshot.data!
                 .where((schedule) => schedule.status == 'Rating')
                 .toList();
 
             if (ratingSchedules.isEmpty) {
-              return Center(
+              return const Center(
                 child: Text(
                   'Không có lịch chấm',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black, // No "Rating" schedules text color set to black
+                    color: Colors.black,
                   ),
                 ),
               );
@@ -87,16 +85,21 @@ class _ScheduleScreenState extends State<ScheduleScreen>
               itemCount: ratingSchedules.length,
               itemBuilder: (context, index) {
                 final schedule = ratingSchedules[index];
+                final DateTime now = DateTime.now();
+                final bool isSameDate = schedule.endDate?.year == now.year &&
+                    schedule.endDate?.month == now.month &&
+                    schedule.endDate?.day == now.day;
+
                 return GestureDetector(
-                  onTap: () {
-                    _navigateToScheduleAwardScreen(schedule.id);
-                  },
+                  onTap: isSameDate
+                      ? () => _navigateToScheduleAwardScreen(schedule.id)
+                      : null,
                   child: Container(
                     margin:
                         const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: isSameDate ? Colors.white : Colors.grey[300],
                       borderRadius: BorderRadius.circular(8),
                       boxShadow: const [
                         BoxShadow(
@@ -108,11 +111,19 @@ class _ScheduleScreenState extends State<ScheduleScreen>
                     ),
                     child: ListTile(
                       leading: CircleAvatar(child: Text('${index + 1}')),
-                      title: Text('Nét Vẽ Xanh ${schedule.year ?? '20XX'}'),
+                      title: Text(
+                        'Nét Vẽ Xanh ${schedule.year ?? '20XX'}',
+                        style: TextStyle(
+                          color: isSameDate ? Colors.black : Colors.grey,
+                        ),
+                      ),
                       subtitle: Text(
                         '${schedule.round ?? 'No Description'} - ${schedule.endDate ?? 'No End Date'}',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: isSameDate ? Colors.black : Colors.grey,
+                        ),
                       ),
                     ),
                   ),

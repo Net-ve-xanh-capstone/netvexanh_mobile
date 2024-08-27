@@ -68,7 +68,6 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
             screenView = ScheduleScreen();
           });
           break;
-          break;
         default:
           break;
       }
