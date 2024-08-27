@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; // Import SystemChrome
 import 'package:netvexanh_mobile/models/list_post.dart';
-import 'package:netvexanh_mobile/screens/app_theme.dart';
 import 'package:netvexanh_mobile/screens/post_detail_screen.dart';
 import 'package:netvexanh_mobile/services/post_service.dart';
 
@@ -24,6 +24,11 @@ class _PostScreenState extends State<PostScreen> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    // Adjust system UI overlay style
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent, // Transparent to avoid color overlap
+      statusBarIconBrightness: Brightness.dark, // Ensure icons are visible on a light background
+    ));
     _fetchPosts();
     _scrollController.addListener(() {
       if (_scrollController.position.atEdge) {
@@ -65,85 +70,97 @@ class _PostScreenState extends State<PostScreen> with TickerProviderStateMixin {
       backgroundColor: Colors.white, // Background color set to white
       appBar: AppBar(
         title: Text(
-          'Post List',
+          'Bài Đăng',
           style: TextStyle(
             fontSize: 24,
             color: Colors.black, // Text color set to black for contrast
           ),
         ),
-        backgroundColor: Colors.white, // AppBar background color set to white
+        backgroundColor: Color.fromARGB(255, 255, 255, 255), // AppBar background color
         elevation: 0, // Removes the shadow from the AppBar
-        iconTheme: IconThemeData(color: Colors.black), // Ensures icon color is black
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: isDataLoaded
-                ? ListView.builder(
-                    controller: _scrollController,
-                    itemCount: posts.length,
-                    itemBuilder: (context, index) {
-                      final post = posts[index];
-                      return GestureDetector(
-                        onTap: () {
-                          if (isDataLoaded) {
-                            _navigateToPostDetail(post.id!);
-                          }
-                        },
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(
-                              vertical: 8, horizontal: 16),
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            color: Colors.grey.shade200, // Light grey color for post containers
-                            boxShadow: const [
-                              BoxShadow(
-                                color: Colors.grey,
-                                blurRadius: 4,
-                                offset: Offset(0, 2),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              child: isDataLoaded
+                  ? posts.isNotEmpty
+                      ? ListView.builder(
+                          controller: _scrollController,
+                          itemCount: posts.length,
+                          itemBuilder: (context, index) {
+                            final post = posts[index];
+                            return GestureDetector(
+                              onTap: () {
+                                if (isDataLoaded) {
+                                  _navigateToPostDetail(post.id!);
+                                }
+                              },
+                              child: Container(
+                                margin: const EdgeInsets.symmetric(
+                                    vertical: 8, horizontal: 16),
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8),
+                                  color: Colors.grey.shade200, // Light grey color for post containers
+                                  boxShadow: const [
+                                    BoxShadow(
+                                      color: Colors.grey,
+                                      blurRadius: 4,
+                                      offset: Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      post.title ?? 'No Title',
+                                      style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black), // Text color set to black
+                                    ),
+                                    const SizedBox(height: 8),
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: post.image != null
+                                          ? Image.network(
+                                              post.image!,
+                                              width: double.infinity,
+                                              height: 200,
+                                              fit: BoxFit.cover,
+                                            )
+                                          : Image.asset(
+                                              'assets/images/userImage.png',
+                                              width: double.infinity,
+                                              height: 200,
+                                              fit: BoxFit.cover,
+                                            ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ],
+                            );
+                          },
+                        )
+                      : const Center(
+                          child: Text(
+                            'Trống',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
                           ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                post.title ?? 'No Title',
-                                style: const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black), // Text color set to black
-                              ),
-                              const SizedBox(height: 8),
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
-                                child: post.image != null
-                                    ? Image.network(
-                                        post.image!,
-                                        width: double.infinity,
-                                        height: 200,
-                                        fit: BoxFit.cover,
-                                      )
-                                    : Image.asset(
-                                        'assets/images/userImage.png',
-                                        width: double.infinity,
-                                        height: 200,
-                                        fit: BoxFit.cover,
-                                      ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  )
-                : const Center(
-                    child: CircularProgressIndicator(),
-                  ),
-          ),
-          _buildPageSelector(),
-        ],
+                        )
+                  : const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+            ),
+            _buildPageSelector(),
+          ],
+        ),
       ),
     );
   }
@@ -175,12 +192,9 @@ class _PostScreenState extends State<PostScreen> with TickerProviderStateMixin {
             },
             child: Container(
               margin: const EdgeInsets.symmetric(horizontal: 4.0),
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+              padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
               decoration: BoxDecoration(
-                color: currentPage == pageNumber
-                    ? Colors.blue
-                    : Colors.grey.shade300,
+                color: currentPage == pageNumber ? Colors.blue : Colors.grey.shade300,
                 borderRadius: BorderRadius.circular(4.0),
               ),
               child: Text(

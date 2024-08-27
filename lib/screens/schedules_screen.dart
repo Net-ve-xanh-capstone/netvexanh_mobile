@@ -28,15 +28,14 @@ class _ScheduleScreenState extends State<ScheduleScreen>
       backgroundColor: Colors.white, // Background color set to white
       appBar: AppBar(
         title: Text(
-          'Schedule List',
+          'Lịch Chấm',
           style: TextStyle(
             fontSize: 24,
             color: Colors.black, // Text color set to black for contrast
           ),
         ),
         backgroundColor: Colors.white, // AppBar background color set to white
-        elevation: 0, // Removes the shadow from the AppBar
-        iconTheme: IconThemeData(color: Colors.black), // Ensures icon color is black
+        elevation: 0,
       ),
       body: FutureBuilder<List<Schedule>>(
         future: _schedulesFuture,
@@ -57,7 +56,7 @@ class _ScheduleScreenState extends State<ScheduleScreen>
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return Center(
               child: Text(
-                'No schedules found',
+                'Trống',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -66,27 +65,38 @@ class _ScheduleScreenState extends State<ScheduleScreen>
               ),
             );
           } else {
-            return ListView.builder(
-              itemCount: snapshot.data!.length,
-              itemBuilder: (context, index) {
-                final schedule = snapshot.data![index];
-                bool canSelect = schedule.status == 'Rating';
-                Color tileColor = canSelect
-                    ? Colors.white
-                    : Colors.grey.shade300.withOpacity(0.5);
+            // Filter schedules to only show those with "Rating" status
+            final ratingSchedules = snapshot.data!
+                .where((schedule) => schedule.status == 'Rating')
+                .toList();
 
+            if (ratingSchedules.isEmpty) {
+              return Center(
+                child: Text(
+                  'Không có lịch chấm',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black, // No "Rating" schedules text color set to black
+                  ),
+                ),
+              );
+            }
+
+            return ListView.builder(
+              itemCount: ratingSchedules.length,
+              itemBuilder: (context, index) {
+                final schedule = ratingSchedules[index];
                 return GestureDetector(
                   onTap: () {
-                    if (canSelect) {
-                      _navigateToScheduleAwardScreen(schedule.id);
-                    }
+                    _navigateToScheduleAwardScreen(schedule.id);
                   },
                   child: Container(
                     margin:
                         const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: tileColor,
+                      color: Colors.white,
                       borderRadius: BorderRadius.circular(8),
                       boxShadow: const [
                         BoxShadow(

@@ -6,6 +6,7 @@ import 'package:netvexanh_mobile/screens/full_image_screen.dart';
 import 'package:netvexanh_mobile/screens/schedules_screen.dart';
 import 'package:netvexanh_mobile/services/painting_service.dart';
 import 'package:netvexanh_mobile/services/schedule_service.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 class RatingScreen extends StatefulWidget {
   final String scheduleId;
@@ -43,32 +44,10 @@ class _RatingScreenState extends State<RatingScreen>
       appBar: AppBar(
         title: const Text('Chấm Điểm'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.list),
-            onPressed: () async {
-              _showResultsPopup(_results);
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.workspace_premium),
-            onPressed: () async {
-              _showAwardsPopup(_awards);
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {
-              setState(() {
-                _isSearching = true;
-              });
-            },
-          ),
           if (_isSearching)
             IconButton(
               icon: const Icon(Icons.clear),
-              onPressed: () {
-                _resetSearch();
-              },
+              onPressed: _resetSearch,
             ),
         ],
       ),
@@ -88,6 +67,29 @@ class _RatingScreenState extends State<RatingScreen>
                       onChanged: _searchPaintings,
                     ),
                   ),
+                ExpansionTile(
+                  title: const Text(
+                    'Giải Thưởng',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  children: [
+                    for (var award in _awards)
+                      ListTile(
+                        title: Text(
+                          award.rank,
+                          style: const TextStyle(
+                              fontSize:
+                                  16), // Set the font size for the title text
+                        ),
+                        trailing: Text(
+                          award.quantity.toString(),
+                          style: const TextStyle(
+                              fontSize:
+                                  16), // Set the font size for the trailing text
+                        ),
+                      ),
+                  ],
+                ),
                 Expanded(
                   child: GridView.builder(
                     gridDelegate:
@@ -106,37 +108,57 @@ class _RatingScreenState extends State<RatingScreen>
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color: painting.borderColor ??
-                                          Colors.transparent,
-                                      width: 5,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Color.fromARGB(255, 247, 245,
+                                  245), // Set background color for the entire card
+                              border: Border.all(
+                                color: painting.borderColor ??
+                                    Colors.transparent, // Change border color
+                                width: 2, // Adjust border width as needed
+                              ),
+                              borderRadius: BorderRadius.circular(
+                                  8), // Match the card's border radius
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    painting.rank ?? '',
+                                    textAlign: TextAlign.left,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14, // Font size
                                     ),
-                                    borderRadius: BorderRadius.circular(8),
                                   ),
-                                  child: painting.image != null
-                                      ? Image.network(
-                                          painting.image!,
-                                          fit: BoxFit.cover,
-                                        )
-                                      : const Center(child: Text('No Image')),
                                 ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  painting.code ?? 'Untitled',
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold),
+                                Expanded(
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: painting.image != null
+                                        ? Image.network(
+                                            painting.image!,
+                                            fit: BoxFit.cover,
+                                          )
+                                        : const Center(child: Text('No Image')),
+                                  ),
                                 ),
-                              ),
-                            ],
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    painting.code ?? 'Untitled',
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       );
@@ -145,7 +167,51 @@ class _RatingScreenState extends State<RatingScreen>
                 ),
               ],
             ),
+      floatingActionButton: SpeedDial(
+        icon: Icons.menu,
+        activeIcon: Icons.close,
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
+        children: [
+          SpeedDialChild(
+            child: const Icon(Icons.list),
+            label: 'Xem kết Quả',
+            onTap: () => _showResultsPopup(_results),
+          ),
+          SpeedDialChild(
+            child: const Icon(Icons.search),
+            label: 'Tìm kiếm',
+            onTap: () {
+              setState(() {
+                _isSearching = true;
+              });
+            },
+          ),
+        ],
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
+  }
+
+  void _searchPaintings(String query) {
+    setState(() {
+      if (query.isEmpty) {
+        _searchList = null;
+      } else {
+        _searchList = _paintings
+            .where((painting) =>
+                painting.code!.toLowerCase().contains(query.toLowerCase()))
+            .toList();
+      }
+    });
+  }
+
+  void _resetSearch() {
+    setState(() {
+      _searchList = null;
+      _isSearching = false;
+      _searchController.clear();
+    });
   }
 
   Future<void> _fetchPaintings() async {
@@ -312,11 +378,12 @@ class _RatingScreenState extends State<RatingScreen>
 
   void _NotPassDialog(Painting painting) {
     String reason = '';
+
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Xác Nhận Không Đạt'),
+          title: const Text('Xác Nhận Không Đạt'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -331,7 +398,7 @@ class _RatingScreenState extends State<RatingScreen>
                   hintText: 'Nhập lý do...',
                 ),
                 onChanged: (value) {
-                  reason = value.toString();
+                  reason = value.trim(); // Trim any leading/trailing whitespace
                 },
               ),
             ],
@@ -347,7 +414,15 @@ class _RatingScreenState extends State<RatingScreen>
               onPressed: () {
                 Navigator.of(context).pop();
                 Navigator.of(context).pop();
-                _updatePaintingStatus(painting, false, reason, null);
+                _updatePaintingStatus(
+                  painting,
+                  false,
+                  reason.isEmpty
+                      ? 'Không đáp ứng tiêu chí'
+                      : reason, // Default reason if empty
+                  null,
+                  null,
+                );
               },
               child: const Text('Xác Nhận'),
             ),
@@ -360,6 +435,7 @@ class _RatingScreenState extends State<RatingScreen>
   void _PassDialog(Painting painting) {
     String reason = '';
     String? selectedAwardId;
+    String? selectedAwardRank;
 
     showDialog(
       context: context,
@@ -369,6 +445,7 @@ class _RatingScreenState extends State<RatingScreen>
             // Determine the default value if `selectedAwardId` is null
             if (selectedAwardId == null && _awards.isNotEmpty) {
               selectedAwardId = _awards.first.awardId;
+              selectedAwardRank = _awards.first.rank.toString();
             }
 
             return AlertDialog(
@@ -390,6 +467,10 @@ class _RatingScreenState extends State<RatingScreen>
                     onChanged: (value) {
                       setState(() {
                         selectedAwardId = value;
+                        selectedAwardRank = _awards
+                            .firstWhere((award) => award.awardId == value)
+                            .rank
+                            .toString();
                       });
                     },
                   ),
@@ -420,7 +501,15 @@ class _RatingScreenState extends State<RatingScreen>
                           Navigator.of(context).pop();
                           Navigator.of(context).pop();
                           _updatePaintingStatus(
-                              painting, true, reason, selectedAwardId!);
+                            painting,
+                            true,
+                            reason.isEmpty
+                                ? 'Bài dự thi đáp ứng tiêu chí'
+                                : reason, // Default reason if empty
+                            selectedAwardId!,
+                            selectedAwardRank ??
+                                'Chưa chọn giải thưởng', // Default rank if null
+                          );
                         },
                   child: const Text('Xác Nhận'),
                 ),
@@ -432,10 +521,16 @@ class _RatingScreenState extends State<RatingScreen>
     );
   }
 
-  void _updatePaintingStatus(Painting painting, bool isPass, String reason,
-      String? selectedAwardId) async {
+  void _updatePaintingStatus(
+    Painting painting,
+    bool isPass,
+    String reason,
+    String? selectedAwardId,
+    String? award,
+  ) async {
     final updatedPainting = painting.copyWith(
       borderColor: isPass ? Colors.green : Colors.red,
+      rank: isPass ? award : 'Không đạt',
     );
 
     setState(() {
@@ -452,13 +547,8 @@ class _RatingScreenState extends State<RatingScreen>
       }
     });
 
-    var newResult = PaintingResult(
-      updatedPainting.id,
-      selectedAwardId,
-      reason,
-      updatedPainting.code,
-      isPass,
-    );
+    var newResult = PaintingResult(updatedPainting.id, selectedAwardId,
+        updatedPainting.code, reason, isPass, award, painting.image);
 
     if (isPass == true) {
       var oldValue = _results
@@ -500,28 +590,10 @@ class _RatingScreenState extends State<RatingScreen>
     }
   }
 
-  void _searchPaintings(String query) {
-    setState(() {
-      if (query.isEmpty) {
-        _searchList = null;
-      } else {
-        _searchList = _paintings
-            .where((painting) =>
-                painting.code!.toLowerCase().contains(query.toLowerCase()))
-            .toList();
-      }
-    });
-  }
-
-  void _resetSearch() {
-    setState(() {
-      _searchList = null;
-      _isSearching = false;
-      _searchController.clear();
-    });
-  }
-
   void _showResultsPopup(List<PaintingResult> results) {
+    // Filter the results to include only those where isPass is true
+    final passedResults = results.where((result) => result.isPass).toList();
+
     showDialog(
       context: context,
       builder: (context) {
@@ -529,7 +601,7 @@ class _RatingScreenState extends State<RatingScreen>
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Kết quả đã lưu'),
+              const Text('Kết quả đạt'),
               IconButton(
                 icon: const Icon(Icons.close),
                 onPressed: () => Navigator.of(context).pop(),
@@ -542,44 +614,57 @@ class _RatingScreenState extends State<RatingScreen>
             child: Column(
               children: [
                 Expanded(
-                    child: ListView.builder(
-                  padding:
-                      const EdgeInsets.all(16.0), // Padding around the ListView
-                  itemCount: results.length,
-                  itemBuilder: (context, index) {
-                    final result = results[index];
-                    return Card(
-                      elevation: 4.0, // Shadow depth for the card
-                      margin: const EdgeInsets.symmetric(
-                          vertical: 8.0), // Margin between cards
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.all(
-                            16.0), // Padding inside each ListTile
-                        title: Text(
-                          'Mã Tranh: ${result.code}',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16.0,
+                  child: ListView.builder(
+                    padding: const EdgeInsets.all(
+                        16.0), // Padding around the ListView
+                    itemCount: passedResults.length,
+                    itemBuilder: (context, index) {
+                      final result = passedResults[index];
+                      return Card(
+                        elevation: 4.0, // Shadow depth for the card
+                        margin: const EdgeInsets.symmetric(
+                            vertical: 8.0), // Margin between cards
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.all(
+                              16.0), // Padding inside each ListTile
+                          title: Text(
+                            '${result.code}',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16.0,
+                            ),
+                          ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Display the image if available
+                              if (result.image != null)
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 8.0),
+                                  child: Image.network(
+                                    result.image!,
+                                    height: 100, // Set image height
+                                    width: double.infinity, // Full width
+                                    fit: BoxFit.cover, // Fit image
+                                  ),
+                                ),
+                              Text(
+                                result.award ?? 'Không Đạt',
+                                style: TextStyle(
+                                  color: Colors.green,
+                                  fontSize: 14.0,
+                                ),
+                              ),
+                            ],
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0),
                           ),
                         ),
-                        subtitle: Text(
-                          result.isPass ? 'Đạt' : 'Không Đạt',
-                          style: TextStyle(
-                            color: result.isPass ? Colors.green : Colors.red,
-                            fontSize: 14.0,
-                          ),
-                        ),
-                        leading: Icon(
-                          result.isPass ? Icons.check_circle : Icons.cancel,
-                          color: result.isPass ? Colors.green : Colors.red,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                      ),
-                    );
-                  },
-                )),
+                      );
+                    },
+                  ),
+                ),
                 ElevatedButton(
                   onPressed: () async {
                     bool canProceed =
@@ -588,8 +673,8 @@ class _RatingScreenState extends State<RatingScreen>
                       // Tiến hành gửi kết quả
                       String scheduleId = _awards[0].scheduleId.toString();
 
-                      bool success = await ScheduleService()
-                          .RatingPreliminaryRound(scheduleId, results);
+                      bool success =
+                          await ScheduleService().rating(scheduleId, results);
 
                       // Hiển thị AlertDialog thay vì SnackBar
                       await showDialog(
@@ -638,7 +723,7 @@ class _RatingScreenState extends State<RatingScreen>
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Saved Results'),
+              const Text('Giải Thưởng'),
               IconButton(
                 icon: const Icon(Icons.close),
                 onPressed: () => Navigator.of(context).pop(),
@@ -652,29 +737,31 @@ class _RatingScreenState extends State<RatingScreen>
               children: [
                 Expanded(
                   child: ListView.builder(
+                    padding: const EdgeInsets.all(16.0),
                     itemCount: awards.length,
                     itemBuilder: (context, index) {
-                      final result = awards[index];
+                      final award = awards[index];
                       return Card(
-                        elevation: 4.0, // Shadow depth for the card
-                        margin: const EdgeInsets.symmetric(
-                            vertical: 8.0), // Margin between cards
+                        elevation: 4.0,
+                        margin: const EdgeInsets.symmetric(vertical: 8.0),
                         child: ListTile(
-                          contentPadding: const EdgeInsets.all(
-                              16.0), // Padding inside each ListTile
-                          leading: CircleAvatar(
-                            child: _getRankIcon(
-                                result), // Function to get rank icon
-                          ),
+                          contentPadding: const EdgeInsets.all(16.0),
                           title: Text(
-                            'Giải: ${result.rank}',
+                            award.rank ?? 'Unknown Award',
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16.0,
                             ),
                           ),
                           subtitle: Text(
-                            'Số lượng: ${result.quantity}', // Convert quantity to String
+                            'Số lượng: ${award.quantity ?? 0}',
+                            style: const TextStyle(
+                              fontSize: 14.0,
+                            ),
+                          ),
+                          leading: const Icon(
+                            Icons.emoji_events,
+                            color: Colors.amber,
                           ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8.0),

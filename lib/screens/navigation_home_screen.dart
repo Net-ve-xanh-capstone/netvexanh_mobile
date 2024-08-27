@@ -4,7 +4,6 @@ import 'package:netvexanh_mobile/widget/home_drawer.dart';
 import 'package:netvexanh_mobile/screens/post_screen.dart';
 import 'package:netvexanh_mobile/screens/schedules_screen.dart';
 import 'package:netvexanh_mobile/screens/help_screen.dart';
-import 'package:netvexanh_mobile/screens/invite_friend_screen.dart';
 import 'package:flutter/material.dart';
 
 class NavigationHomeScreen extends StatefulWidget {
@@ -69,10 +68,6 @@ class _NavigationHomeScreenState extends State<NavigationHomeScreen> {
             screenView = ScheduleScreen();
           });
           break;
-        case DrawerIndex.Invite:
-          setState(() {
-            screenView = InviteFriend();
-          });
           break;
         default:
           break;

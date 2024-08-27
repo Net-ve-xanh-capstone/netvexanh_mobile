@@ -8,10 +8,12 @@ class PaintingResult {
   String? awardId;
   String? reason;
   String? code;
+  String? award;
   bool isPass;
+  String? image;
   
 
-  PaintingResult(this.paintingId ,this.awardId, this.code, this.reason, this.isPass);
+  PaintingResult(this.paintingId ,this.awardId, this.code, this.reason, this.isPass, this.award, this.image);
 
   /// A necessary factory constructor for creating a new User instance
   /// from a map. Pass the map to the generated `_$UserFromJson()` constructor.

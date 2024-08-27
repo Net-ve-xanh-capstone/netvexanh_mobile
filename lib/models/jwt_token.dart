@@ -1,5 +1,4 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:netvexanh_mobile/models/refresh_token.dart';
 
 part 'map/jwt_token.g.dart';
 

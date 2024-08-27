@@ -1,7 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:netvexanh_mobile/models/post.dart'; // Thay đổi theo mô hình dữ liệu mới
-import 'package:netvexanh_mobile/screens/app_theme.dart';
 import 'package:netvexanh_mobile/services/post_service.dart';
 
 class PostDetailScreen extends StatefulWidget {
@@ -24,14 +23,30 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var brightness = MediaQuery.of(context).platformBrightness;
-    bool isLightMode = brightness == Brightness.light;
     return Scaffold(
-      backgroundColor: isLightMode ? AppTheme.white : AppTheme.nearlyBlack,
+      backgroundColor: Colors.white, // Always set to white
       appBar: AppBar(
-        backgroundColor: isLightMode ? AppTheme.white : AppTheme.nearlyBlack,
-        iconTheme:
-            IconThemeData(color: isLightMode ? Colors.black : Colors.white),
+        backgroundColor: Colors.white, // Always set to white
+        iconTheme: IconThemeData(color: Colors.black),
+        centerTitle: true, // Ensure the title is centered
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const CircleAvatar(
+              backgroundImage: AssetImage('assets/images/icon.png'),
+              radius: 20,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              'Netvexanh',
+              style: TextStyle(
+                fontSize: 20, // Increased font size
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+          ],
+        ),
       ),
       body: FutureBuilder<Post>(
         future: postDetail,
@@ -41,13 +56,11 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
           } else if (snapshot.hasError) {
             return Center(
                 child: Text('Failed to load post details',
-                    style: TextStyle(
-                        color: isLightMode ? Colors.black : Colors.white)));
+                    style: TextStyle(color: Colors.black)));
           } else if (!snapshot.hasData) {
             return Center(
                 child: Text('No details found',
-                    style: TextStyle(
-                        color: isLightMode ? Colors.black : Colors.white)));
+                    style: TextStyle(color: Colors.black)));
           } else {
             final post = snapshot.data!;
             return Padding(
@@ -56,13 +69,11 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                 child: Container(
                   padding: const EdgeInsets.all(16.0),
                   decoration: BoxDecoration(
-                    color: isLightMode
-                        ? Colors.white
-                        : const Color.fromARGB(255, 43, 58, 58),
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(8),
                     boxShadow: [
                       BoxShadow(
-                        color: isLightMode ? Colors.black12 : Colors.black54,
+                        color: Colors.black12,
                         blurRadius: 4,
                         offset: const Offset(0, 2),
                       ),
@@ -71,24 +82,6 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        children: [
-                          const CircleAvatar(
-                            backgroundImage:
-                                AssetImage('assets/images/icon.png'),
-                            radius: 20,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Netvexanh',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: isLightMode ? Colors.black : Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
                       const SizedBox(height: 16),
                       if (post.images != null && post.images!.isNotEmpty)
                         CarouselSlider(
@@ -121,15 +114,13 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
-                          color: isLightMode ? Colors.black : Colors.white,
+                          color: Colors.black,
                         ),
                       ),
                       const SizedBox(height: 16),
                       Text(
                         post.description ?? 'No Description',
-                        style: TextStyle(
-                            color:
-                                isLightMode ? Colors.black87 : Colors.white70),
+                        style: TextStyle(color: Colors.black87),
                       ),
                     ],
                   ),

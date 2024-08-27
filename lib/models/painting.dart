@@ -18,6 +18,7 @@ class Painting {
     String? code;
     String? ownerName;
     Color? borderColor;
+    String? rank;
 
   //Painting(this.Id, this.Image, this.Name, this.Description, this.SubmitTime, this.topicName, this.ScheduleId, this.Status, this.Code, this.OwnerName);
     Painting({
@@ -31,6 +32,7 @@ class Painting {
     required this.code,
     required this.ownerName,
     this.borderColor,
+    this.rank,
   });
 
   /// A necessary factory constructor for creating a new User instance
@@ -57,6 +59,7 @@ class Painting {
     String? code,
     String? ownerName,
     Color? borderColor,
+    String? rank,
   }) {
     return Painting(
       id: id ?? this.id,
@@ -69,6 +72,7 @@ class Painting {
       code: code ?? this.code,
       ownerName: ownerName ?? this.ownerName,
       borderColor: borderColor ?? this.borderColor,
+      rank: rank ?? this.rank,
     );
   }
   

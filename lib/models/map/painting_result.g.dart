@@ -13,11 +13,13 @@ PaintingResult _$PaintingResultFromJson(Map<String, dynamic> json) =>
       json['reason'] as String?,
       json['code'] as String?,
       json['isPass'] as bool,
+      json['award'] as String?,
+      json['image'] as String
     );
 
 Map<String, dynamic> _$PaintingResultToJson(PaintingResult instance) =>
     <String, dynamic>{
       'paintingId': instance.paintingId,
-      'awardId': instance.code,
+      'awardId': instance.awardId,
       'reason': instance.reason,
     };

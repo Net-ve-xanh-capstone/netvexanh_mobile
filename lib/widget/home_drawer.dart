@@ -57,29 +57,19 @@ class _HomeDrawerState extends State<HomeDrawer> {
     drawerList = <DrawerList>[
       DrawerList(
         index: DrawerIndex.POST,
-        labelName: 'Post',
+        labelName: 'Bài Đăng',
         icon: const Icon(Icons.article_rounded),
       ),
       if (currentRole != 'Competitor')
         DrawerList(
           index: DrawerIndex.Schedule,
-          labelName: 'Schedule',
+          labelName: 'Lịch Chấm',
           icon: const Icon(Icons.assessment),
         ),
       DrawerList(
         index: DrawerIndex.Notification,
-        labelName: 'Notification',
+        labelName: 'Thông Báo',
         icon: const Icon(Icons.notifications),
-      ),
-      DrawerList(
-        index: DrawerIndex.Invite,
-        labelName: 'Invite Friend',
-        icon: const Icon(Icons.group),
-      ),
-      DrawerList(
-        index: DrawerIndex.Share,
-        labelName: 'Rate the app',
-        icon: const Icon(Icons.share),
       )
     ];
 
@@ -358,8 +348,7 @@ enum DrawerIndex {
   POST,
   Help,
   Share,
-  About,
-  Invite
+  About
 }
 
 class DrawerList {

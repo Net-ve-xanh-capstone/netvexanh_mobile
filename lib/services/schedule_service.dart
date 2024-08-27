@@ -53,7 +53,7 @@ class ScheduleService {
     }
   }
 
-  Future<bool> RatingPreliminaryRound(String scheduleId, List<PaintingResult> result) async {
+  Future<bool> rating(String scheduleId, List<PaintingResult> result) async {
     String url = 'https://netvexanh.azurewebsites.net/api/schedules/Rating';
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -61,10 +61,7 @@ class ScheduleService {
     prefs.getString('Id');
 
     // Tạo body của request
-    final body = jsonEncode({
-      'scheduleId': scheduleId,
-      'paintings': result
-    });
+    final body = jsonEncode({'scheduleId': scheduleId, 'paintings': result});
     try {
       var response = await http.put(Uri.parse(url),
           headers: {
@@ -74,10 +71,17 @@ class ScheduleService {
           body: body);
 
       if (response.statusCode == 200) {
-        // Thành công
-        print('Request successful'); 
-        print(response.body);
-        return true;
+        // Send Confrm
+        String confirmUrl =
+            'https://netvexanh.azurewebsites.net/api/schedules/confirmrating/$scheduleId';
+        var responseV2 = await http.get(Uri.parse(url), headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token'
+        });
+        if (response.statusCode == 200) {
+          return true;
+        }
+        return false;
       } else {
         // Lỗi từ server
         print('Request failed with status: ${response.statusCode}');
