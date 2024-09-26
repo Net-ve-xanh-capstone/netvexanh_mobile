@@ -187,6 +187,24 @@ class _RatingScreenState extends State<RatingScreen>
               });
             },
           ),
+          SpeedDialChild(
+            child: Icon(Icons.auto_fix_high),
+            label: 'Auto chọn Không đạt',
+            onTap: () {
+              // Kiểm tra nếu đã hết giải thì thực hiện auto chọn không đạt
+              bool awardsRemaining =
+                  _awards.any((award) => (award.quantity ?? 0) > 0);
+
+              if (!awardsRemaining) {
+                _autoMarkRemainingAsNotPass();
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                      content: Text('Vẫn còn giải thưởng chưa được trao!')),
+                );
+              }
+            },
+          ),
         ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
@@ -526,14 +544,35 @@ class _RatingScreenState extends State<RatingScreen>
     bool isPass,
     String reason,
     String? selectedAwardId,
-    String? award,
-  ) async {
+    String? award, {
+    bool showNextPopup = true,
+  }) async {
+    // Kiểm tra xem painting có đạt hay không
+    if (isPass) {
+      // Nếu đạt, kiểm tra số lượng giải thưởng
+      var awardIndex = _awards.indexWhere(
+          (x) => x.awardId == selectedAwardId && (x.quantity ?? 0) > 0);
+
+      if (awardIndex == -1) {
+        // Nếu không còn giải thưởng, hiển thị thông báo và dừng tiến trình
+        await _showWarningDialog('Giải Thưởng Đã Hết');
+        return;
+      }
+
+      // Nếu còn giải, tiếp tục cập nhật painting và giảm số lượng giải
+      var award = _awards[awardIndex];
+      award.quantity = (award.quantity ?? 0) - 1;
+      _awards[awardIndex] = award;
+    }
+
+    // Tiếp tục cập nhật trạng thái cho painting (set màu và rank)
     final updatedPainting = painting.copyWith(
       borderColor: isPass ? Colors.green : Colors.red,
       rank: isPass ? award : 'Không đạt',
     );
 
     setState(() {
+      // Cập nhật danh sách paintings và search list nếu có
       int index = _paintings.indexWhere((p) => p.id == painting.id);
       if (index != -1) {
         _paintings[index] = updatedPainting;
@@ -550,44 +589,53 @@ class _RatingScreenState extends State<RatingScreen>
     var newResult = PaintingResult(updatedPainting.id, selectedAwardId,
         updatedPainting.code, reason, isPass, award, painting.image);
 
-    if (isPass == true) {
+    // Nếu painting không đạt, tăng lại số lượng giải thưởng
+    if (!isPass) {
       var oldValue = _results
           .where((x) => x.paintingId == newResult.paintingId)
           .firstOrNull;
       if (oldValue != null) {
         _results.remove(oldValue);
-      }
-      _results.add(newResult);
-      var index = _awards
-          .indexWhere((x) => x.awardId == selectedAwardId && x.quantity > 0);
 
-      if (index != -1) {
-        var award = _awards[index];
-        award.quantity = (award.quantity ?? 0) - 1;
-        _awards[index] = award;
-      } else {
-        await _showWarningDialog('Giải Thưởng Đã Hết');
-
-        return; // Exit the method early
+        var awardIndex =
+            _awards.indexWhere((x) => x.awardId == oldValue.awardId);
+        if (awardIndex != -1) {
+          var award = _awards[awardIndex];
+          award.quantity = (award.quantity ?? 0) + 1;
+          _awards[awardIndex] = award;
+        }
       }
-    } else {
-      var oldValue = _results
-          .where((x) => x.paintingId == newResult.paintingId)
-          .firstOrNull;
-      if (oldValue != null) {
-        _results.remove(oldValue);
-      }
-      _results.add(newResult);
-      var index = _awards.indexWhere((x) => x.awardId == oldValue?.awardId);
-
-      var award = _awards[index];
-      award.quantity = (award.quantity ?? 0) + 1;
-      _awards[index] = award;
     }
-    int nextIndex = _paintings.indexOf(updatedPainting) + 1;
-    if (nextIndex < _paintings.length) {
-      _showDetailPopup(_paintings[nextIndex]);
+
+    _results.add(newResult);
+
+    // Di chuyển đến painting tiếp theo sau khi cập nhật trạng thái
+    if (showNextPopup) {
+      int nextIndex = _paintings.indexOf(updatedPainting) + 1;
+      if (nextIndex < _paintings.length) {
+        _showDetailPopup(_paintings[nextIndex]);
+      }
     }
+  }
+
+  void _autoMarkRemainingAsNotPass() {
+    setState(() {
+      // Duyệt qua danh sách tranh và chọn những tranh chưa được chấm
+      for (var painting in _paintings) {
+        if (painting.rank == null || painting.rank == "") {
+          _updatePaintingStatus(
+              painting, false, 'Không đáp ứng tiêu chí', null, null,
+              showNextPopup: false);
+        }
+      }
+    });
+
+    // Thông báo cho người dùng
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+          content: Text(
+              'Tất cả các bức tranh còn lại đã được đánh dấu là Không đạt')),
+    );
   }
 
   void _showResultsPopup(List<PaintingResult> results) {

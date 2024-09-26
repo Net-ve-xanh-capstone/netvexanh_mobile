@@ -86,12 +86,10 @@ class _ScheduleScreenState extends State<ScheduleScreen>
               itemBuilder: (context, index) {
                 final schedule = ratingSchedules[index];
                 final DateTime now = DateTime.now();
-                final bool isSameDate = schedule.endDate?.year == now.year &&
-                    schedule.endDate?.month == now.month &&
-                    schedule.endDate?.day == now.day;
+                final bool isRating = schedule.status == 'Rating';
 
                 return GestureDetector(
-                  onTap: isSameDate
+                  onTap: isRating
                       ? () => _navigateToScheduleAwardScreen(schedule.id)
                       : null,
                   child: Container(
@@ -99,7 +97,7 @@ class _ScheduleScreenState extends State<ScheduleScreen>
                         const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: isSameDate ? Colors.white : Colors.grey[300],
+                      color: isRating ? Colors.white : Colors.grey[300],
                       borderRadius: BorderRadius.circular(8),
                       boxShadow: const [
                         BoxShadow(
@@ -114,7 +112,7 @@ class _ScheduleScreenState extends State<ScheduleScreen>
                       title: Text(
                         'Nét Vẽ Xanh ${schedule.year ?? '20XX'}',
                         style: TextStyle(
-                          color: isSameDate ? Colors.black : Colors.grey,
+                          color: isRating ? Colors.black : Colors.grey,
                         ),
                       ),
                       subtitle: Text(
@@ -122,7 +120,7 @@ class _ScheduleScreenState extends State<ScheduleScreen>
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          color: isSameDate ? Colors.black : Colors.grey,
+                          color: isRating ? Colors.black : Colors.grey,
                         ),
                       ),
                     ),
