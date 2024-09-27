@@ -16,6 +16,7 @@ Schedule _$ScheduleFromJson(Map<String, dynamic> json) => Schedule(
       json['endDate'] == null
           ? null
           : DateTime.parse(json['endDate'] as String),
+      json['contestName'] as String,
     );
 
 Map<String, dynamic> _$ScheduleToJson(Schedule instance) => <String, dynamic>{
@@ -25,5 +26,6 @@ Map<String, dynamic> _$ScheduleToJson(Schedule instance) => <String, dynamic>{
       'year': instance.year,
       'examinerId': instance.examinerId,
       'status': instance.status,
-      'endDate':instance.endDate
+      'endDate':instance.endDate,
+      'contestName': instance.contestName,
     };

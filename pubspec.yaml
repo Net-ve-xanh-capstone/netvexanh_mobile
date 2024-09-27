@@ -13,7 +13,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
+  intl: ^0.17.0
   multi_image_picker_view: ^1.0.3
   file_picker: ^6.1.1
   image_picker: ^1.0.4
@@ -58,19 +58,46 @@ flutter:
     - assets/introduction_animation/
 
   fonts:
-    - family: WorkSans
-      fonts:
-      - asset: assets/fonts/WorkSans-Regular.ttf
-      - asset: assets/fonts/WorkSans-Medium.ttf
-        weight: 500
-      - asset: assets/fonts/WorkSans-SemiBold.ttf 
-        weight: 600
-      - asset: assets/fonts/WorkSans-Bold.ttf
-        weight: 700
     - family: Roboto
       fonts:
-      - asset: assets/fonts/Roboto-Bold.ttf
-      - asset: assets/fonts/Roboto-Regular.ttf
-      - asset: assets/fonts/Roboto-Medium.ttf
-        weight: 400
+        - asset: assets/fonts/Roboto-Black.ttf
+          weight: 900
+        - asset: assets/fonts/Roboto-BlackItalic.ttf
+          weight: 900
+          style: italic
+        - asset: assets/fonts/Roboto-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Roboto-BoldItalic.ttf
+          weight: 700
+          style: italic
+        - asset: assets/fonts/Roboto-Italic.ttf
+          weight: 400
+          style: italic
+        - asset: assets/fonts/Roboto-Light.ttf
+          weight: 300
+        - asset: assets/fonts/Roboto-LightItalic.ttf
+          weight: 300
+          style: italic
+        - asset: assets/fonts/Roboto-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Roboto-MediumItalic.ttf
+          weight: 500
+          style: italic
+        - asset: assets/fonts/Roboto-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Roboto-Thin.ttf
+          weight: 100
+        - asset: assets/fonts/Roboto-ThinItalic.ttf
+          weight: 100
+          style: italic
 
+    - family: WorkSans
+      fonts:
+        - asset: assets/fonts/WorkSans-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/WorkSans-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/WorkSans-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/WorkSans-SemiBold.ttf
+          weight: 600

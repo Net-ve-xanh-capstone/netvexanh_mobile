@@ -27,7 +27,8 @@ class _PostScreenState extends State<PostScreen> with TickerProviderStateMixin {
     // Adjust system UI overlay style
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Colors.transparent, // Transparent to avoid color overlap
-      statusBarIconBrightness: Brightness.dark, // Ensure icons are visible on a light background
+      statusBarIconBrightness:
+          Brightness.dark, // Ensure icons are visible on a light background
     ));
     _fetchPosts();
     _scrollController.addListener(() {
@@ -69,14 +70,16 @@ class _PostScreenState extends State<PostScreen> with TickerProviderStateMixin {
     return Scaffold(
       backgroundColor: Colors.white, // Background color set to white
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Bài Đăng',
           style: TextStyle(
             fontSize: 24,
             color: Colors.black, // Text color set to black for contrast
           ),
         ),
-        backgroundColor: Color.fromARGB(255, 255, 255, 255), // AppBar background color
+        automaticallyImplyLeading: false,
+        backgroundColor:
+            Color.fromARGB(255, 255, 255, 255), // AppBar background color
         elevation: 0, // Removes the shadow from the AppBar
       ),
       body: SafeArea(
@@ -102,7 +105,8 @@ class _PostScreenState extends State<PostScreen> with TickerProviderStateMixin {
                                 padding: const EdgeInsets.all(16),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(8),
-                                  color: Colors.grey.shade200, // Light grey color for post containers
+                                  color: Colors.grey
+                                      .shade200, // Light grey color for post containers
                                   boxShadow: const [
                                     BoxShadow(
                                       color: Colors.grey,
@@ -117,9 +121,11 @@ class _PostScreenState extends State<PostScreen> with TickerProviderStateMixin {
                                     Text(
                                       post.title ?? 'No Title',
                                       style: const TextStyle(
+                                          fontFamily: 'Roboto',
                                           fontSize: 18,
                                           fontWeight: FontWeight.bold,
-                                          color: Colors.black), // Text color set to black
+                                          color: Colors
+                                              .black), // Text color set to black
                                     ),
                                     const SizedBox(height: 8),
                                     ClipRRect(
@@ -192,15 +198,19 @@ class _PostScreenState extends State<PostScreen> with TickerProviderStateMixin {
             },
             child: Container(
               margin: const EdgeInsets.symmetric(horizontal: 4.0),
-              padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
               decoration: BoxDecoration(
-                color: currentPage == pageNumber ? Colors.blue : Colors.grey.shade300,
+                color: currentPage == pageNumber
+                    ? Colors.blue
+                    : Colors.grey.shade300,
                 borderRadius: BorderRadius.circular(4.0),
               ),
               child: Text(
                 pageNumber.toString(),
                 style: TextStyle(
-                  color: currentPage == pageNumber ? Colors.white : Colors.black,
+                  color:
+                      currentPage == pageNumber ? Colors.white : Colors.black,
                 ),
               ),
             ),

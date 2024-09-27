@@ -49,6 +49,8 @@ class AccountService {
     final prefs = await SharedPreferences.getInstance();
     Map<String, dynamic> decodedToken = JwtDecoder.decode(jwtToken);
     await prefs.setString('Id', decodedToken['Id']);
+    await prefs.setString('Avatar', decodedToken['Avatar']);
+    await prefs.setString('FullName', decodedToken['FullName']);
     await prefs.setString('name', decodedToken['nameid']);
     await prefs.setString('role', decodedToken['role']);
     await prefs.setString('jwtToken', jwtToken);

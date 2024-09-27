@@ -1,145 +1,141 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:netvexanh_mobile/models/schedule.dart';
 import 'package:netvexanh_mobile/screens/rating_screen.dart';
 import 'package:netvexanh_mobile/services/schedule_service.dart';
+import 'package:netvexanh_mobile/screens/app_theme.dart';
+import 'package:intl/intl.dart';
 
-class ScheduleScreen extends StatefulWidget {
+class ScheduleScreen extends StatelessWidget {
   ScheduleScreen({Key? key}) : super(key: key);
-
-  @override
-  _ScheduleScreenState createState() => _ScheduleScreenState();
-}
-
-class _ScheduleScreenState extends State<ScheduleScreen>
-    with TickerProviderStateMixin {
-  late Future<List<Schedule>> _schedulesFuture;
-
-  @override
-  void initState() {
-    super.initState();
-    _schedulesFuture = ScheduleService.getSchedules();
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text(
-          'Lịch Chấm',
-          style: TextStyle(
-            fontSize: 24,
-            color: Colors.black,
-          ),
-        ),
+        title: Text('Lịch Chấm', style: _titleStyle),
+        automaticallyImplyLeading: false,
         backgroundColor: Colors.white,
         elevation: 0,
       ),
       body: FutureBuilder<List<Schedule>>(
-        future: _schedulesFuture,
+        future: ScheduleService.getSchedules(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(
-              child: Text(
-                'Failed to load schedules: ${snapshot.error}',
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-            );
+            return _MessageDisplay(
+                message: 'Failed to load schedules: ${snapshot.error}');
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(
-              child: Text(
-                'Trống',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-            );
+            return _MessageDisplay(message: 'Trống');
           } else {
-            final ratingSchedules = snapshot.data!
-                .where((schedule) => schedule.status == 'Rating')
-                .toList();
-
-            if (ratingSchedules.isEmpty) {
-              return const Center(
-                child: Text(
-                  'Không có lịch chấm',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-              );
-            }
-
-            return ListView.builder(
-              itemCount: ratingSchedules.length,
-              itemBuilder: (context, index) {
-                final schedule = ratingSchedules[index];
-                final DateTime now = DateTime.now();
-                final bool isRating = schedule.status == 'Rating';
-
-                return GestureDetector(
-                  onTap: isRating
-                      ? () => _navigateToScheduleAwardScreen(schedule.id)
-                      : null,
-                  child: Container(
-                    margin:
-                        const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: isRating ? Colors.white : Colors.grey[300],
-                      borderRadius: BorderRadius.circular(8),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.black26,
-                          blurRadius: 4,
-                          offset: Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: ListTile(
-                      leading: CircleAvatar(child: Text('${index + 1}')),
-                      title: Text(
-                        'Nét Vẽ Xanh ${schedule.year ?? '20XX'}',
-                        style: TextStyle(
-                          color: isRating ? Colors.black : Colors.grey,
-                        ),
-                      ),
-                      subtitle: Text(
-                        '${schedule.round ?? 'No Description'} - ${schedule.endDate ?? 'No End Date'}',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: isRating ? Colors.black : Colors.grey,
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              },
-            );
+            return _ScheduleList(schedules: snapshot.data!);
           }
         },
       ),
     );
   }
+}
 
-  void _navigateToScheduleAwardScreen(String id) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => RatingScreen(scheduleId: id),
+class _ScheduleList extends StatelessWidget {
+  final List<Schedule> schedules;
+
+  const _ScheduleList({Key? key, required this.schedules}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemCount: schedules.length,
+      itemBuilder: (context, index) => _ScheduleListItem(
+        schedule: schedules[index],
+        index: index,
       ),
     );
   }
 }
+
+class _ScheduleListItem extends StatelessWidget {
+  final Schedule schedule;
+  final int index;
+
+  const _ScheduleListItem(
+      {Key? key, required this.schedule, required this.index})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final bool isRating = schedule.status == 'Rating';
+
+    return GestureDetector(
+      onTap: isRating
+          ? () => _navigateToScheduleAwardScreen(context, schedule.id)
+          : null,
+      child: Opacity(
+        opacity:
+            isRating ? 1.0 : 0.5, // Reduce opacity for non-selectable items
+        child: Container(
+          margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+          padding: const EdgeInsets.all(16),
+          decoration: _itemDecoration,
+          child: ListTile(
+            title: Text('${schedule.contestName} - ${schedule.round} ',
+                style: _textStyle),
+            subtitle: Text(
+              'Ngày chấm: ${formattedEndDate(schedule.endDate)}',
+              style: _textStyle.copyWith(fontSize: 14),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+String formattedEndDate(DateTime? endDate) {
+  if (endDate == null) {
+    return 'No End Date';
+  } else {
+    return DateFormat('dd/MM/yyyy').format(endDate);
+  }
+}
+
+}
+
+class _MessageDisplay extends StatelessWidget {
+  final String message;
+
+  const _MessageDisplay({Key? key, required this.message}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(child: Text(message, style: _textStyle));
+  }
+}
+
+void _navigateToScheduleAwardScreen(BuildContext context, String id) {
+  Navigator.push(context,
+      MaterialPageRoute(builder: (context) => RatingScreen(scheduleId: id)));
+}
+
+// Common styles
+final TextStyle _titleStyle = TextStyle(
+  fontFamily: "Roboto",
+  fontSize: 24,
+  fontWeight: FontWeight.w500,
+  color: AppTheme.nearlyBlack,
+);
+
+final TextStyle _textStyle = TextStyle(
+  fontWeight: FontWeight.w500,
+  fontSize: 16,
+  color: AppTheme.nearlyBlack,
+);
+
+final BoxDecoration _itemDecoration = BoxDecoration(
+  color: Colors.white,
+  borderRadius: BorderRadius.circular(8),
+  boxShadow: const [
+    BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 2))
+  ],
+);

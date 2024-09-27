@@ -37,7 +37,7 @@ class ScheduleService {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('jwtToken');
     String? id = prefs.getString('Id');
-    String url = 'https://netvexanh.azurewebsites.net/examiner/$id';
+    String url = 'https://netvexanh.azurewebsites.net/api/schedules/examiners/$id';
     var response = await http.get(Uri.parse(url), headers: {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token'
@@ -74,11 +74,11 @@ class ScheduleService {
         // Send Confrm
         String confirmUrl =
             'https://netvexanh.azurewebsites.net/api/schedules/confirmrating/$scheduleId';
-        var responseV2 = await http.get(Uri.parse(url), headers: {
+        var responseV2 = await http.put(Uri.parse(confirmUrl), headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token'
         });
-        if (response.statusCode == 200) {
+        if (responseV2.statusCode == 200) {
           return true;
         }
         return false;

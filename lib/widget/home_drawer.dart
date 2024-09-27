@@ -34,8 +34,8 @@ class _HomeDrawerState extends State<HomeDrawer> {
 
   void set() async {
     final prefs = await SharedPreferences.getInstance();
-    avatar = Future.value(prefs.getString('avatar'));
-    name = Future.value(prefs.getString('name'));
+    avatar = Future.value(prefs.getString('Avatar'));
+    name = Future.value(prefs.getString('FullName'));
     role = Future.value(prefs.getString('role'));
     setDrawerListArray();
   }
@@ -99,16 +99,16 @@ class _HomeDrawerState extends State<HomeDrawer> {
                     animation: widget.iconAnimationController!,
                     builder: (BuildContext context, Widget? child) {
                       return ScaleTransition(
-                        scale: AlwaysStoppedAnimation<double>(
-                            1.0 - (widget.iconAnimationController!.value) * 0.2),
+                        scale: AlwaysStoppedAnimation<double>(1.0 -
+                            (widget.iconAnimationController!.value) * 0.2),
                         child: RotationTransition(
-                          turns: AlwaysStoppedAnimation<double>(
-                              Tween<double>(begin: 0.0, end: 24.0)
-                                      .animate(CurvedAnimation(
-                                          parent: widget.iconAnimationController!,
-                                          curve: Curves.fastOutSlowIn))
-                                      .value /
-                                  360),
+                          turns: AlwaysStoppedAnimation<double>(Tween<double>(
+                                      begin: 0.0, end: 24.0)
+                                  .animate(CurvedAnimation(
+                                      parent: widget.iconAnimationController!,
+                                      curve: Curves.fastOutSlowIn))
+                                  .value /
+                              360),
                           child: Container(
                             height: 120,
                             width: 120,
@@ -122,25 +122,38 @@ class _HomeDrawerState extends State<HomeDrawer> {
                               ],
                             ),
                             child: ClipRRect(
-                              borderRadius: const BorderRadius.all(Radius.circular(60.0)),
-                              child: ClipRRect(
-                                borderRadius: const BorderRadius.all(Radius.circular(60.0)),
-                                child: FutureBuilder<String?>(
-                                  future: avatar,
-                                  builder: (context, snapshot) {
-                                    if (snapshot.connectionState == ConnectionState.waiting) {
-                                      return const CircularProgressIndicator();
-                                    } else if (snapshot.hasError) {
-                                      return Image.asset('assets/images/userImage.png');
-                                    } else if (snapshot.hasData &&
-                                        snapshot.data != null &&
-                                        snapshot.data!.isNotEmpty) {
-                                      return Image.network(snapshot.data!);
-                                    } else {
-                                      return Image.asset('assets/images/userImage.png');
-                                    }
-                                  },
-                                ),
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(60.0)),
+                              child: FutureBuilder<String?>(
+                                future: avatar,
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return const CircularProgressIndicator();
+                                  } else if (snapshot.hasError ||
+                                      !snapshot.hasData ||
+                                      snapshot.data == null ||
+                                      snapshot.data!.isEmpty) {
+                                    return Image.asset(
+                                      'assets/images/userImage.png',
+                                      fit: BoxFit
+                                          .cover, // Điều chỉnh để ảnh vừa với không gian
+                                    );
+                                  } else {
+                                    return Image.network(
+                                      snapshot.data!,
+                                      fit: BoxFit
+                                          .cover, // Điều chỉnh để ảnh vừa với không gian
+                                      errorBuilder:
+                                          (context, error, stackTrace) {
+                                        return Image.asset(
+                                          'assets/images/userImage.png',
+                                          fit: BoxFit.cover,
+                                        );
+                                      },
+                                    );
+                                  }
+                                },
                               ),
                             ),
                           ),
@@ -153,7 +166,8 @@ class _HomeDrawerState extends State<HomeDrawer> {
                     child: FutureBuilder<String?>(
                       future: name,
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
                           return const Text('Loading...');
                         } else if (snapshot.hasError) {
                           return const Text('Error fetching username');
@@ -341,15 +355,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
   }
 }
 
-enum DrawerIndex {
-  Schedule,
-  Notification,
-  HOME,
-  POST,
-  Help,
-  Share,
-  About
-}
+enum DrawerIndex { Schedule, Notification, HOME, POST, Help, Share, About }
 
 class DrawerList {
   DrawerList({
