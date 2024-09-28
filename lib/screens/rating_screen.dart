@@ -203,7 +203,8 @@ class _RatingScreenState extends State<RatingScreen>
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                      content: Text('Vẫn còn giải thưởng chưa được trao!', style:_textStyle)),
+                      content: Text('Vẫn còn giải thưởng chưa được trao!',
+                          style: _textStyle)),
                 );
               }
             },
@@ -262,7 +263,7 @@ class _RatingScreenState extends State<RatingScreen>
   }
 
   void _displayPopup(Painting painting) {
-    bool allAwardsQuantityZero = _awards.every((award) => award.quantity == 0);    
+    bool allAwardsQuantityZero = _awards.every((award) => award.quantity == 0);
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -289,12 +290,14 @@ class _RatingScreenState extends State<RatingScreen>
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Xác Nhận Không Đạt', style:_titleStyle),
+          title: const Text('Xác Nhận Không Đạt', style: _titleStyle),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Bạn có chắc chắn muốn đánh dấu tranh này là "Không Đạt"?', style:_textStyle),
+              const Text(
+                  'Bạn có chắc chắn muốn đánh dấu tranh này là "Không Đạt"?',
+                  style: _textStyle),
               const SizedBox(height: 16),
               TextField(
                 maxLines: 3,
@@ -357,7 +360,7 @@ class _RatingScreenState extends State<RatingScreen>
             }
 
             return AlertDialog(
-              title: const Text('Chọn Giải Thưởng', style:_titleStyle),
+              title: const Text('Chọn Giải Thưởng', style: _titleStyle),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -378,7 +381,7 @@ class _RatingScreenState extends State<RatingScreen>
                     items: _dropDownAward.map((award) {
                       return DropdownMenuItem<String>(
                         value: award.awardId,
-                        child: Text(award.rank.toString(), style:_textStyle),
+                        child: Text(award.rank.toString(), style: _textStyle),
                       );
                     }).toList(),
                     onChanged: (value) {
@@ -411,7 +414,8 @@ class _RatingScreenState extends State<RatingScreen>
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('Hủy', style: TextStyle(color: Colors.grey)),
+                  child:
+                      const Text('Hủy', style: TextStyle(color: Colors.grey)),
                 ),
                 ElevatedButton(
                   onPressed: selectedAwardId == null
@@ -455,8 +459,7 @@ class _RatingScreenState extends State<RatingScreen>
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Kết quả đạt'
-                  , style:_titleStyle),
+              const Text('Kết quả đạt', style: _titleStyle),
               IconButton(
                 icon: const Icon(Icons.close),
                 onPressed: () => Navigator.of(context).pop(),
@@ -540,13 +543,13 @@ class _RatingScreenState extends State<RatingScreen>
                           return AlertDialog(
                             title: Text(success ? 'Thành Công' : 'Thất Bại'),
                             content: Text(
-                              success
-                                  ? 'Chấm bài thành công'
-                                  : 'Gửi kết quả thất bại'
-                            , style:_titleStyle),
+                                success
+                                    ? 'Chấm bài thành công'
+                                    : 'Gửi kết quả thất bại',
+                                style: _titleStyle),
                             actions: <Widget>[
                               TextButton(
-                                child: const Text('OK', style:_titleStyle),
+                                child: const Text('OK', style: _titleStyle),
                                 onPressed: () {
                                   Navigator.of(context).pop();
                                   if (success) {
@@ -563,7 +566,8 @@ class _RatingScreenState extends State<RatingScreen>
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
-                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 32, vertical: 16),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8)),
                   ),
@@ -628,6 +632,15 @@ class _RatingScreenState extends State<RatingScreen>
       // Create new result
       var newResult = PaintingResult(updatedPainting.id, selectedAwardId,
           updatedPainting.code, reason, isPass, award, painting.image);
+
+      if (isPass) {
+        var oldValue = _results
+            .where((x) => x.paintingId == newResult.paintingId)
+            .firstOrNull;
+        if (oldValue != null) {
+          _results.remove(oldValue);
+        }
+      }
 
       // If painting doesn't pass, increase award quantity
       if (!isPass) {
@@ -738,13 +751,13 @@ class _RatingScreenState extends State<RatingScreen>
       builder: (context) {
         return AlertDialog(
           title: const Text('Cảnh Báo'),
-          content: Text(message, style:_titleStyle),
+          content: Text(message, style: _titleStyle),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text('OK', style:_titleStyle),
+              child: const Text('OK', style: _titleStyle),
             ),
           ],
         );

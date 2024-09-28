@@ -73,7 +73,7 @@ class ScheduleService {
       if (response.statusCode == 200) {
         // Send Confrm
         String confirmUrl =
-            'https://netvexanh.azurewebsites.net/api/schedules/confirmrating/$scheduleId';
+            'https://netvexanh.azurewebsites.net/api/schedules/confirm-rating/$scheduleId';
         var responseV2 = await http.put(Uri.parse(confirmUrl), headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token'
